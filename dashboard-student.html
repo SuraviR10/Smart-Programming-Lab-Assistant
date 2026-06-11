@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Dashboard — LabMind AI</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
+</head>
+<body>
+
+<canvas id="particles-bg"></canvas>
+
+<div class="dash-layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">🧠</div>
+      <span>LabMind AI</span>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">Overview</div>
+      <a href="#" class="nav-item active" onclick="showPage('home')">
+        <span class="icon">🏠</span> Dashboard
+      </a>
+      <a href="#" class="nav-item" onclick="showPage('labs')">
+        <span class="icon">🧪</span> My Labs
+      </a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">Work</div>
+      <a href="#" class="nav-item" onclick="showPage('editor')">
+        <span class="icon">💻</span> Code Editor
+      </a>
+      <a href="#" class="nav-item" onclick="showPage('writeups')">
+        <span class="icon">📝</span> Write-Ups
+        <span class="nav-badge">2</span>
+      </a>
+      <a href="#" class="nav-item" onclick="showPage('exams')">
+        <span class="icon">📋</span> Exams
+      </a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">Insights</div>
+      <a href="#" class="nav-item" onclick="showPage('analytics')">
+        <span class="icon">📊</span> Analytics
+      </a>
+      <a href="#" class="nav-item" onclick="showPage('errors')">
+        <span class="icon">🔍</span> Error History
+      </a>
+    </div>
+
+    <div class="nav-section" style="margin-top:auto;padding-top:1rem">
+      <a href="index.html" class="nav-item">
+        <span class="icon">🚪</span> Log Out
+      </a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="dash-main">
+    <header class="dash-header">
+      <div style="display:flex;align-items:center;gap:1rem">
+        <button onclick="toggleSidebar()" style="background:none;border:none;color:var(--text-muted);font-size:1.2rem;cursor:pointer;display:none" id="menu-btn">☰</button>
+        <h1 id="page-title">Dashboard</h1>
+      </div>
+      <div class="header-actions">
+        <div class="notif-btn" onclick="showToast('No new notifications','info')">
+          🔔<div class="notif-badge">2</div>
+        </div>
+        <div class="user-chip" onclick="showToast('Profile settings coming soon','info')">
+          <div class="user-avatar">RK</div>
+          <span>Ravi Kumar</span>
+          <span style="color:var(--text-muted)">▾</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="dash-content">
+
+      <!-- PAGE: HOME -->
+      <div id="page-home" class="page-section">
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-card-icon">🧪</div>
+            <div class="stat-card-val gradient-text">8</div>
+            <div class="stat-card-label">Labs Enrolled</div>
+            <div class="stat-card-change up">↑ 2 this month</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-icon">📝</div>
+            <div class="stat-card-val" style="color:var(--success)">87%</div>
+            <div class="stat-card-label">Avg. Score</div>
+            <div class="stat-card-change up">↑ 5% from last week</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-icon">🧠</div>
+            <div class="stat-card-val" style="color:var(--warning)">12</div>
+            <div class="stat-card-label">AI Assists Used</div>
+            <div class="stat-card-change up">↑ 3 today</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-icon">⏱️</div>
+            <div class="stat-card-val" style="color:var(--danger)">2</div>
+            <div class="stat-card-label">Pending Write-Ups</div>
+            <div class="stat-card-change down">Due today</div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <!-- Upcoming Write-Ups -->
+          <div class="card">
+            <div class="card-title">📝 Upcoming Write-Ups</div>
+            <div style="display:flex;flex-direction:column;gap:0.8rem">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:0.9rem;background:rgba(255,101,132,0.07);border:1px solid rgba(255,101,132,0.2);border-radius:10px">
+                <div>
+                  <div style="font-weight:600;font-size:0.9rem">Write-Up 4: Sorting Algorithms</div>
+                  <div style="color:var(--text-muted);font-size:0.78rem">C Programming Lab • 20 min • 10 marks</div>
+                </div>
+                <button class="btn btn-primary btn-sm" onclick="showPage('editor')">Start</button>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:0.9rem;background:rgba(255,209,102,0.07);border:1px solid rgba(255,209,102,0.2);border-radius:10px">
+                <div>
+                  <div style="font-weight:600;font-size:0.9rem">Write-Up 2: Linked List</div>
+                  <div style="color:var(--text-muted);font-size:0.78rem">Data Structures Lab • 30 min • 15 marks</div>
+                </div>
+                <button class="btn btn-outline btn-sm">Tomorrow</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Activity -->
+          <div class="card">
+            <div class="card-title">⚡ Recent Activity</div>
+            <div class="activity-log">
+              <div class="activity-item">
+                <div class="activity-dot" style="background:#00d4aa"></div>
+                <span>Completed Write-Up 3 — Matrix Addition</span>
+                <span class="activity-time">9/10</span>
+              </div>
+              <div class="activity-item">
+                <div class="activity-dot" style="background:#6c63ff"></div>
+                <span>AI fixed: Missing semicolon error</span>
+                <span class="activity-time">2h ago</span>
+              </div>
+              <div class="activity-item">
+                <div class="activity-dot" style="background:#ffd166"></div>
+                <span>Compiled Fibonacci successfully</span>
+                <span class="activity-time">4h ago</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Performance Chart -->
+        <div class="card">
+          <div class="card-title">📈 Weekly Performance</div>
+          <div class="chart-placeholder" id="home-chart">
+            <!-- bars generated by JS -->
+          </div>
+          <div style="display:flex;gap:1.5rem;margin-top:1rem;justify-content:center;font-size:0.78rem;color:var(--text-muted)">
+            <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAGE: LABS -->
+      <div id="page-labs" class="page-section" style="display:none">
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem">
+          <div class="lab-card" onclick="showPage('editor')">
+            <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#6c63ff,#00d4aa)"></div>
+            <div class="lab-card-icon">⚙️</div>
+            <h3>C Programming Lab</h3>
+            <p>Section A — Dr. Ramesh</p>
+            <div class="lab-card-meta">
+              <span class="tag tag-green">Active</span>
+              <span class="tag tag-purple">10 Programs</span>
+            </div>
+            <div class="progress-bar" style="height:6px">
+              <div class="progress-fill" style="width:80%"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-top:0.4rem;font-size:0.75rem;color:var(--text-muted)">
+              <span>8/10 completed</span><span>80%</span>
+            </div>
+          </div>
+          <div class="lab-card" onclick="showPage('editor')">
+            <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#00d4aa,#4fc3f7)"></div>
+            <div class="lab-card-icon">🌳</div>
+            <h3>Data Structures Lab</h3>
+            <p>Section A — Prof. Sujatha</p>
+            <div class="lab-card-meta">
+              <span class="tag tag-green">Active</span>
+              <span class="tag tag-blue">12 Programs</span>
+            </div>
+            <div class="progress-bar" style="height:6px">
+              <div class="progress-fill" style="width:58%"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-top:0.4rem;font-size:0.75rem;color:var(--text-muted)">
+              <span>7/12 completed</span><span>58%</span>
+            </div>
+          </div>
+          <div class="lab-card">
+            <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#ff6584,#ffd166)"></div>
+            <div class="lab-card-icon">🤖</div>
+            <h3>Machine Learning Lab</h3>
+            <p>Section B — Dr. Meera</p>
+            <div class="lab-card-meta">
+              <span class="tag tag-yellow">Upcoming</span>
+              <span class="tag tag-purple">8 Programs</span>
+            </div>
+            <div class="progress-bar" style="height:6px">
+              <div class="progress-fill" style="width:25%"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-top:0.4rem;font-size:0.75rem;color:var(--text-muted)">
+              <span>2/8 completed</span><span>25%</span>
+            </div>
+          </div>
+          <div class="lab-card">
+            <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#4fc3f7,#6c63ff)"></div>
+            <div class="lab-card-icon">🌐</div>
+            <h3>Full Stack Dev Lab</h3>
+            <p>Section C — Prof. Arun</p>
+            <div class="lab-card-meta">
+              <span class="tag tag-green">Active</span>
+              <span class="tag tag-blue">15 Programs</span>
+            </div>
+            <div class="progress-bar" style="height:6px">
+              <div class="progress-fill" style="width:45%"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-top:0.4rem;font-size:0.75rem;color:var(--text-muted)">
+              <span>7/15 completed</span><span>45%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAGE: EDITOR -->
+      <div id="page-editor" class="page-section" style="display:none">
+        <div class="exam-banner">
+          <div class="exam-banner-dot"></div>
+          <strong>Write-Up Mode Active</strong> — Write-Up 4: Sorting Algorithms &nbsp;|&nbsp;
+          <span style="color:var(--warning)" id="timer">⏱ 19:45 remaining</span>
+          <span style="margin-left:auto">Marks: 10 &nbsp;|&nbsp; C Programming Lab</span>
+        </div>
+
+        <div class="editor-container">
+          <div class="editor-header">
+            <div class="editor-tabs">
+              <div class="editor-tab active">main.c</div>
+              <div class="editor-tab" onclick="showToast('Only main.c allowed in exam mode','info')">+ New File</div>
+            </div>
+            <div class="editor-actions">
+              <button class="btn btn-outline btn-sm" onclick="runCode()">▶ Compile & Run</button>
+              <button class="btn btn-primary btn-sm" onclick="submitCode()">📤 Submit</button>
+            </div>
+          </div>
+
+          <div class="editor-area">
+            <div class="code-editor" id="code-area">
+              <div><span class="line-numbers">1</span><span class="cm">// Write-Up 4: Bubble Sort</span></div>
+              <div><span class="line-numbers">2</span><span class="kw">#include</span><span class="str"> &lt;stdio.h&gt;</span></div>
+              <div><span class="line-numbers">3</span></div>
+              <div><span class="line-numbers">4</span><span class="kw">int</span> <span class="fn">main</span>() {</div>
+              <div><span class="line-numbers">5</span>  <span class="kw">int</span> a[] = {<span class="num">64</span>, <span class="num">34</span>, <span class="num">25</span>, <span class="num">12</span>, <span class="num">22</span>};</div>
+              <div><span class="line-numbers">6</span>  <span class="kw">int</span> n = <span class="num">5</span>, i, j, temp;</div>
+              <div><span class="line-numbers">7</span>  <span class="kw">for</span>(i = <span class="num">0</span>; i &lt; n-<span class="num">1</span>; i++) {</div>
+              <div><span class="line-numbers">8</span>    <span class="kw">for</span>(j = <span class="num">0</span>; j &lt; n-i-<span class="num">1</span>; j++) {</div>
+              <div><span class="line-numbers">9</span>      <span class="kw">if</span>(a[j] &gt; a[j+<span class="num">1</span>]) {</div>
+              <div><span class="line-numbers">10</span>        temp = a[j];</div>
+              <div><span class="line-numbers">11</span>        a[j] = a[j+<span class="num">1</span>];</div>
+              <div><span class="line-numbers">12</span>        a[j+<span class="num">1</span>] = temp;</div>
+              <div><span class="line-numbers">13</span>      }</div>
+              <div><span class="line-numbers">14</span>    }</div>
+              <div><span class="line-numbers">15</span>  }</div>
+              <div><span class="line-numbers">16</span>  <span class="fn">printf</span>(<span class="str">"Sorted: "</span>);</div>
+              <div><span class="line-numbers">17</span>  <span class="kw">for</span>(i = <span class="num">0</span>; i &lt; n; i++)</div>
+              <div><span class="line-numbers">18</span>    <span class="fn">printf</span>(<span class="str">"%d "</span>, a[i])</div>
+              <div><span class="line-numbers">19</span>  <span class="kw">return</span> <span class="num">0</span>;</div>
+              <div><span class="line-numbers">20</span>}</div>
+            </div>
+            <div class="editor-output">
+              <div class="output-label">Output</div>
+              <div id="output-area" style="color:var(--text-muted);font-size:0.82rem">Click <strong>Compile &amp; Run</strong> to execute...</div>
+            </div>
+          </div>
+
+          <div class="ai-panel" id="ai-panel" style="display:none">
+            <div class="ai-panel-header">🤖 LabMind AI Assistant</div>
+            <div class="ai-panel-content" id="ai-content"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAGE: WRITE-UPS -->
+      <div id="page-writeups" class="page-section" style="display:none">
+        <div class="card" style="margin-bottom:1.5rem">
+          <div class="card-title">📝 All Write-Ups</div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th><th>Title</th><th>Lab</th><th>Duration</th><th>Marks</th><th>Status</th><th>Score</th><th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td><td>Factorial Program</td><td>C Programming</td><td>15 min</td><td>10</td>
+                  <td><span class="badge badge-success">Completed</span></td>
+                  <td><strong style="color:var(--success)">9/10</strong></td>
+                  <td><button class="btn btn-outline btn-sm" onclick="showToast('Viewing submission...','info')">View</button></td>
+                </tr>
+                <tr>
+                  <td>2</td><td>Fibonacci Series</td><td>C Programming</td><td>15 min</td><td>10</td>
+                  <td><span class="badge badge-success">Completed</span></td>
+                  <td><strong style="color:var(--success)">8/10</strong></td>
+                  <td><button class="btn btn-outline btn-sm" onclick="showToast('Viewing submission...','info')">View</button></td>
+                </tr>
+                <tr>
+                  <td>3</td><td>Matrix Addition</td><td>C Programming</td><td>20 min</td><td>10</td>
+                  <td><span class="badge badge-success">Completed</span></td>
+                  <td><strong style="color:var(--success)">9/10</strong></td>
+                  <td><button class="btn btn-outline btn-sm" onclick="showToast('Viewing submission...','info')">View</button></td>
+                </tr>
+                <tr>
+                  <td>4</td><td>Sorting Algorithms</td><td>C Programming</td><td>20 min</td><td>10</td>
+                  <td><span class="badge badge-danger">Pending</span></td>
+                  <td>—</td>
+                  <td><button class="btn btn-primary btn-sm" onclick="showPage('editor')">Start Now</button></td>
+                </tr>
+                <tr>
+                  <td>5</td><td>Linked List</td><td>Data Structures</td><td>30 min</td><td>15</td>
+                  <td><span class="badge badge-warning">Upcoming</span></td>
+                  <td>—</td>
+                  <td><button class="btn btn-outline btn-sm" disabled>Tomorrow</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAGE: EXAMS -->
+      <div id="page-exams" class="page-section" style="display:none">
+        <div class="card" style="margin-bottom:1.5rem">
+          <div class="card-title">📋 Examination Schedule</div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr><th>#</th><th>Exam</th><th>Lab</th><th>Date</th><th>Duration</th><th>Status</th><th>Score</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td><td>Internal Lab Exam 1</td><td>C Programming</td><td>Jan 15, 2025</td><td>2 hrs</td>
+                  <td><span class="badge badge-success">Completed</span></td>
+                  <td><strong style="color:var(--success)">43/50</strong></td>
+                </tr>
+                <tr>
+                  <td>2</td><td>Internal Lab Exam 2</td><td>Data Structures</td><td>Feb 20, 2025</td><td>2 hrs</td>
+                  <td><span class="badge badge-warning">Upcoming</span></td>
+                  <td>—</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAGE: ANALYTICS -->
+      <div id="page-analytics" class="page-section" style="display:none">
+        <div class="stats-row" style="margin-bottom:1.5rem">
+          <div class="stat-card">
+            <div class="stat-card-icon">🏆</div>
+            <div class="stat-card-val gradient-text">87%</div>
+            <div class="stat-card-label">Overall Average</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-icon">🔥</div>
+            <div class="stat-card-val" style="color:var(--warning)">12</div>
+            <div class="stat-card-label">Programs Submitted</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-icon">💡</div>
+            <div class="stat-card-val" style="color:var(--secondary)">5</div>
+            <div class="stat-card-label">Error Types Fixed</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-icon">⏱️</div>
+            <div class="stat-card-val" style="color:var(--info)">18h</div>
+            <div class="stat-card-label">Lab Hours Logged</div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title">📊 Score Trend</div>
+            <div class="chart-placeholder" id="analytics-chart"></div>
+          </div>
+          <div class="card">
+            <div class="card-title">🏅 Lab-wise Performance</div>
+            <div class="progress-list" style="display:flex;flex-direction:column;gap:0.9rem">
+              <div class="progress-item">
+                <span class="progress-label" style="min-width:150px">C Programming</span>
+                <div class="progress-bar"><div class="progress-fill" style="width:87%"></div></div>
+                <span class="progress-pct">87%</span>
+              </div>
+              <div class="progress-item">
+                <span class="progress-label" style="min-width:150px">Data Structures</span>
+                <div class="progress-bar"><div class="progress-fill" style="width:74%"></div></div>
+                <span class="progress-pct">74%</span>
+              </div>
+              <div class="progress-item">
+                <span class="progress-label" style="min-width:150px">Machine Learning</span>
+                <div class="progress-bar"><div class="progress-fill" style="width:60%"></div></div>
+                <span class="progress-pct">60%</span>
+              </div>
+              <div class="progress-item">
+                <span class="progress-label" style="min-width:150px">Full Stack Dev</span>
+                <div class="progress-bar"><div class="progress-fill" style="width:78%"></div></div>
+                <span class="progress-pct">78%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🔍 Common Error Types</div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem">
+            <div style="background:rgba(255,101,132,0.08);border:1px solid rgba(255,101,132,0.2);border-radius:12px;padding:1rem;text-align:center">
+              <div style="font-size:1.5rem;font-weight:800;color:var(--danger)">7</div>
+              <div style="font-size:0.78rem;color:var(--text-muted)">Syntax Errors</div>
+            </div>
+            <div style="background:rgba(255,209,102,0.08);border:1px solid rgba(255,209,102,0.2);border-radius:12px;padding:1rem;text-align:center">
+              <div style="font-size:1.5rem;font-weight:800;color:var(--warning)">3</div>
+              <div style="font-size:0.78rem;color:var(--text-muted)">Undeclared Variables</div>
+            </div>
+            <div style="background:rgba(79,195,247,0.08);border:1px solid rgba(79,195,247,0.2);border-radius:12px;padding:1rem;text-align:center">
+              <div style="font-size:1.5rem;font-weight:800;color:var(--info)">2</div>
+              <div style="font-size:0.78rem;color:var(--text-muted)">Type Mismatch</div>
+            </div>
+            <div style="background:rgba(108,99,255,0.08);border:1px solid rgba(108,99,255,0.2);border-radius:12px;padding:1rem;text-align:center">
+              <div style="font-size:1.5rem;font-weight:800;color:var(--primary)">1</div>
+              <div style="font-size:0.78rem;color:var(--text-muted)">Missing Header</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAGE: ERRORS -->
+      <div id="page-errors" class="page-section" style="display:none">
+        <div class="card">
+          <div class="card-title">🔍 AI Error History</div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr><th>Date</th><th>Program</th><th>Error Type</th><th>GCC Message</th><th>AI Explanation</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="white-space:nowrap">Today 10:15</td>
+                  <td>Bubble Sort</td>
+                  <td><span class="badge badge-danger">Syntax</span></td>
+                  <td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem">expected ';' before 'return'</td>
+                  <td style="font-size:0.82rem;color:var(--text-muted)">Missing semicolon on line 18 after printf statement</td>
+                </tr>
+                <tr>
+                  <td style="white-space:nowrap">Yesterday</td>
+                  <td>Matrix Add</td>
+                  <td><span class="badge badge-warning">Undeclared</span></td>
+                  <td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem">'j' undeclared</td>
+                  <td style="font-size:0.82rem;color:var(--text-muted)">Variable 'j' used in loop but not declared in int declarations</td>
+                </tr>
+                <tr>
+                  <td style="white-space:nowrap">Jan 8</td>
+                  <td>Fibonacci</td>
+                  <td><span class="badge badge-info">Logic</span></td>
+                  <td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem">implicit declaration of 'printf'</td>
+                  <td style="font-size:0.82rem;color:var(--text-muted)">Missing #include &lt;stdio.h&gt; at the top of the file</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- dash-content -->
+  </main>
+</div>
+
+<div id="toast-container"></div>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LabMind AI — Smart Programming Lab Assistant</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>">
+</head>
+<body>
+
+<canvas id="particles-bg"></canvas>
+
+<!-- NAV -->
+<nav class="navbar" id="navbar">
+  <a href="index.html" class="logo">
+    <div class="logo-icon">🧠</div>
+    LabMind AI
+  </a>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#how-it-works">How It Works</a></li>
+    <li><a href="#preview">Dashboard</a></li>
+    <li><a href="#testimonials">Testimonials</a></li>
+  </ul>
+  <div style="display:flex;gap:0.7rem;align-items:center">
+    <a href="dashboard-student.html" class="btn btn-outline">Student Login</a>
+    <a href="dashboard-faculty.html" class="btn btn-primary">Faculty Login</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-text">
+      <div class="hero-badge">✨ AI-Powered Programming Lab Platform</div>
+      <h1 class="hero-title">
+        Debug Smarter,<br>
+        Learn <span class="gradient-text">Faster</span> with<br>
+        AI Assistance
+      </h1>
+      <p class="hero-subtitle">
+        Transform your programming lab experience. LabMind AI converts cryptic compiler errors into beginner-friendly guidance, automates assessments, and tracks every student's progress in real time.
+      </p>
+      <div class="hero-actions">
+        <a href="dashboard-student.html" class="btn btn-primary btn-lg">🚀 Start Learning</a>
+        <a href="dashboard-faculty.html" class="btn btn-outline btn-lg">🎓 Faculty Portal</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-item">
+          <div class="stat-num" data-count="10000">0</div>
+          <div class="stat-label">Students Helped</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num" data-count="500">0</div>
+          <div class="stat-label">Labs Created</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num" data-count="98">0</div>
+          <div class="stat-label">% Satisfaction</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="hero-card" style="position:relative">
+        <div class="card-header">
+          <div class="dot red"></div>
+          <div class="dot yellow"></div>
+          <div class="dot green"></div>
+          <div class="card-title-bar"></div>
+        </div>
+        <div class="code-block">
+          <div><span class="line-num">1</span><span class="cm">// Factorial Program</span></div>
+          <div><span class="line-num">2</span><span class="kw">#include</span> <span class="str">&lt;stdio.h&gt;</span></div>
+          <div><span class="line-num">3</span></div>
+          <div><span class="line-num">4</span><span class="kw">int</span> <span class="fn">main</span>() {</div>
+          <div><span class="line-num">5</span>  <span class="kw">int</span> n = <span class="num">5</span>, fact = <span class="num">1</span></div>
+          <div><span class="line-num">6</span>  <span class="kw">return</span> <span class="num">0</span>;</div>
+          <div><span class="line-num">7</span>}</div>
+        </div>
+        <div class="error-panel">
+          <div class="error-header">⚠️ Compiler Error Detected</div>
+          <code style="font-size:0.75rem;color:#ff9999;font-family:'JetBrains Mono',monospace">
+            error: expected ';' before 'return'
+          </code>
+          <div class="ai-suggestion">
+            <strong>🤖 AI Says:</strong> The variable declaration on line 5 is missing a semicolon at the end. Add <code style="color:#c3e88d">;</code> after <code style="color:#f78c6c">fact = 1</code>
+          </div>
+        </div>
+      </div>
+      <div class="floating-chip chip1">🤖 AI Analysis Active</div>
+      <div class="floating-chip chip2">✅ Auto-Graded</div>
+      <div class="floating-chip chip3">📊 Live Tracking</div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="section" id="features">
+  <div class="section-center">
+    <div class="section-tag">⚡ Features</div>
+    <h2 class="section-title">Everything Your Lab Needs</h2>
+    <p class="section-sub">One platform to code, compile, assess, and learn — powered by AI at every step.</p>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card" style="--accent-color:#6c63ff">
+      <div class="feature-icon" style="background:rgba(108,99,255,0.15)">🧠</div>
+      <h3>AI Error Explanation</h3>
+      <p>GCC compiler errors are automatically converted into beginner-friendly, actionable guidance. No more cryptic messages.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(0,212,170,0.15)">⚡</div>
+      <h3>Automated Assessment</h3>
+      <p>Programs are evaluated automatically using hidden test cases, output comparison, and AST-based logic analysis.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(255,101,132,0.15)">🔒</div>
+      <h3>Secure Exam Mode</h3>
+      <p>Exam mode locks students into the coding environment. Tab switching, window changes, and copy-paste are monitored.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(255,209,102,0.15)">📊</div>
+      <h3>Performance Analytics</h3>
+      <p>Track every student's journey — write-up scores, error history, improvement trends, and weekly progress reports.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(79,195,247,0.15)">📚</div>
+      <h3>Lab Manual Integration</h3>
+      <p>Upload lab manuals once. The system uses prescribed programs as reference solutions for intelligent evaluation.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(200,120,255,0.15)">🏫</div>
+      <h3>Multi-Lab Management</h3>
+      <p>Manage multiple subjects, sections, and cohorts independently — C Lab, ML Lab, Full Stack, all in one place.</p>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section" id="how-it-works" style="background:rgba(108,99,255,0.03)">
+  <div class="section-center">
+    <div class="section-tag">🔄 Workflow</div>
+    <h2 class="section-title">How It Works</h2>
+    <p class="section-sub">A seamless end-to-end pipeline from lab creation to student performance tracking.</p>
+  </div>
+  <div class="steps-grid">
+    <div class="step-card" style="animation-delay:0.1s">
+      <div class="step-num">1</div>
+      <h3>Create Lab</h3>
+      <p>Faculty creates a lab environment, uploads the manual, and adds students to the session.</p>
+    </div>
+    <div class="step-card" style="animation-delay:0.2s">
+      <div class="step-num">2</div>
+      <h3>Students Code</h3>
+      <p>Students write, compile, and run programs in the integrated browser-based code editor.</p>
+    </div>
+    <div class="step-card" style="animation-delay:0.3s">
+      <div class="step-num">3</div>
+      <h3>AI Explains Errors</h3>
+      <p>On compilation failure, the AI module instantly converts GCC errors to plain-language guidance.</p>
+    </div>
+    <div class="step-card" style="animation-delay:0.4s">
+      <div class="step-num">4</div>
+      <h3>Auto-Evaluate</h3>
+      <p>Write-up submissions are graded automatically — compilation, output correctness, and logic structure.</p>
+    </div>
+    <div class="step-card" style="animation-delay:0.5s">
+      <div class="step-num">5</div>
+      <h3>Monitor & Report</h3>
+      <p>Faculty receives real-time alerts and detailed performance reports for every student.</p>
+    </div>
+  </div>
+</section>
+
+<!-- DASHBOARD PREVIEW -->
+<section class="section" id="preview">
+  <div class="section-center">
+    <div class="section-tag">👁️ Preview</div>
+    <h2 class="section-title">Powerful Dashboards</h2>
+    <p class="section-sub">Intuitive interfaces built for both students and faculty.</p>
+  </div>
+  <div class="dashboard-preview">
+    <div class="preview-tabs">
+      <div class="preview-tab active" onclick="switchTab('student-tab', this)">🎓 Student View</div>
+      <div class="preview-tab" onclick="switchTab('faculty-tab', this)">👨‍🏫 Faculty View</div>
+      <div class="preview-tab" onclick="switchTab('alert-tab', this)">🚨 Activity Alerts</div>
+    </div>
+
+    <div id="student-tab" class="preview-body active">
+      <div class="mini-dash-grid">
+        <div class="mini-stat">
+          <div class="mini-stat-val" style="color:#6c63ff">8/10</div>
+          <div class="mini-stat-label">Labs Completed</div>
+        </div>
+        <div class="mini-stat">
+          <div class="mini-stat-val" style="color:#00d4aa">87%</div>
+          <div class="mini-stat-label">Avg. Score</div>
+        </div>
+        <div class="mini-stat">
+          <div class="mini-stat-val" style="color:#ffd166">5</div>
+          <div class="mini-stat-label">Pending Tasks</div>
+        </div>
+        <div class="mini-stat">
+          <div class="mini-stat-val" style="color:#ff6584">12</div>
+          <div class="mini-stat-label">Errors Fixed with AI</div>
+        </div>
+      </div>
+      <div class="progress-list">
+        <div class="progress-item">
+          <span class="progress-label">C Programming Lab</span>
+          <div class="progress-bar"><div class="progress-fill" style="width:85%"></div></div>
+          <span class="progress-pct">85%</span>
+        </div>
+        <div class="progress-item">
+          <span class="progress-label">Data Structures Lab</span>
+          <div class="progress-bar"><div class="progress-fill" style="width:72%"></div></div>
+          <span class="progress-pct">72%</span>
+        </div>
+        <div class="progress-item">
+          <span class="progress-label">Machine Learning Lab</span>
+          <div class="progress-bar"><div class="progress-fill" style="width:60%"></div></div>
+          <span class="progress-pct">60%</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="faculty-tab" class="preview-body">
+      <div class="mini-dash-grid">
+        <div class="mini-stat">
+          <div class="mini-stat-val" style="color:#6c63ff">42</div>
+          <div class="mini-stat-label">Total Students</div>
+        </div>
+        <div class="mini-stat">
+          <div class="mini-stat-val" style="color:#00d4aa">6</div>
+          <div class="mini-stat-label">Active Labs</div>
+        </div>
+        <div class="mini-stat">
+          <div class="mini-stat-val" style="color:#ffd166">3</div>
+          <div class="mini-stat-label">Write-Ups Pending</div>
+        </div>
+        <div class="mini-stat">
+          <div class="mini-stat-val" style="color:#ff6584">2</div>
+          <div class="mini-stat-label">Alerts Today</div>
+        </div>
+      </div>
+      <div class="activity-log">
+        <div class="activity-item">
+          <div class="activity-dot" style="background:#00d4aa"></div>
+          <span>Ravi Kumar submitted Write-Up 3 — <strong style="color:#00d4aa">9/10</strong></span>
+          <span class="activity-time">10:23 AM</span>
+        </div>
+        <div class="activity-item">
+          <div class="activity-dot" style="background:#6c63ff"></div>
+          <span>Priya Sharma used AI assist for Bubble Sort error</span>
+          <span class="activity-time">10:18 AM</span>
+        </div>
+        <div class="activity-item">
+          <div class="activity-dot" style="background:#ffd166"></div>
+          <span>Write-Up 4 scheduled — Starts in 15 minutes</span>
+          <span class="activity-time">10:15 AM</span>
+        </div>
+        <div class="activity-item">
+          <div class="activity-dot" style="background:#ff6584"></div>
+          <span>Arjun Das — Tab switch detected during exam</span>
+          <span class="activity-time">10:05 AM</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="alert-tab" class="preview-body">
+      <div class="alert-list">
+        <div class="alert-item err">
+          <span>🚨</span>
+          <div><strong>Arjun Das</strong> switched browser tab during exam<br><small>Write-Up 4 | 10:32 AM</small></div>
+          <span style="margin-left:auto"><button class="btn btn-sm btn-danger">Review</button></span>
+        </div>
+        <div class="alert-item warn">
+          <span>⚠️</span>
+          <div><strong>Meena R</strong> left the exam window for 8 seconds<br><small>Write-Up 4 | 10:29 AM</small></div>
+          <span style="margin-left:auto"><button class="btn btn-sm btn-outline">Dismiss</button></span>
+        </div>
+        <div class="alert-item ok">
+          <span>✅</span>
+          <div><strong>Ravi Kumar</strong> submitted successfully — Score: 9/10<br><small>Write-Up 3 | 10:23 AM</small></div>
+          <span style="margin-left:auto"><button class="btn btn-sm btn-secondary">Details</button></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="section" id="testimonials" style="background:rgba(0,212,170,0.02)">
+  <div class="section-center">
+    <div class="section-tag">💬 Testimonials</div>
+    <h2 class="section-title">Loved by Students & Faculty</h2>
+  </div>
+  <div class="testimonials-grid">
+    <div class="testimonial-card">
+      <div class="stars">★★★★★</div>
+      <p>"I used to get stuck on compiler errors for hours. LabMind AI explains exactly what went wrong in simple words. My understanding of C improved drastically!"</p>
+      <div class="t-author">
+        <div class="t-avatar" style="background:linear-gradient(135deg,#6c63ff,#00d4aa)">RK</div>
+        <div>
+          <div class="t-name">Ravi Kumar</div>
+          <div class="t-role">2nd Year CS Student</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial-card">
+      <div class="stars">★★★★★</div>
+      <p>"Automated grading saves me 4+ hours every week. The logic-based evaluation is surprisingly accurate — even when students use different approaches."</p>
+      <div class="t-author">
+        <div class="t-avatar" style="background:linear-gradient(135deg,#ff6584,#ffd166)">DR</div>
+        <div>
+          <div class="t-name">Dr. Ramesh</div>
+          <div class="t-role">Faculty, Dept. of CS</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial-card">
+      <div class="stars">★★★★★</div>
+      <p>"The exam mode and activity monitoring ensures students are assessed fairly. The real-time alerts during exams are a game-changer for invigilation."</p>
+      <div class="t-author">
+        <div class="t-avatar" style="background:linear-gradient(135deg,#4fc3f7,#6c63ff)">PS</div>
+        <div>
+          <div class="t-name">Prof. Sujatha</div>
+          <div class="t-role">Lab Coordinator</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-box">
+    <h2>Ready to Transform Your Lab?</h2>
+    <p>Join hundreds of institutions already using LabMind AI to make programming labs smarter, fairer, and more effective.</p>
+    <div class="cta-actions">
+      <a href="dashboard-faculty.html" class="btn btn-primary btn-lg">🎓 Set Up Your Lab</a>
+      <a href="dashboard-student.html" class="btn btn-outline btn-lg">👨‍💻 Try as Student</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-content">
+    <div class="footer-brand">
+      <a href="index.html" class="logo" style="font-size:1.1rem;margin-bottom:0.5rem;display:flex">
+        <div class="logo-icon" style="width:28px;height:28px;font-size:0.8rem">🧠</div>
+        &nbsp;LabMind AI
+      </a>
+      <p>An AI-powered programming lab platform designed to help students learn, debug, and grow — while giving faculty the tools they need to teach effectively.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Platform</h4>
+      <ul>
+        <li><a href="#">Code Editor</a></li>
+        <li><a href="#">AI Error Analysis</a></li>
+        <li><a href="#">Auto Assessment</a></li>
+        <li><a href="#">Exam Mode</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>For Faculty</h4>
+      <ul>
+        <li><a href="#">Create Lab</a></li>
+        <li><a href="#">Upload Manual</a></li>
+        <li><a href="#">Dashboard</a></li>
+        <li><a href="#">Reports</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>For Students</h4>
+      <ul>
+        <li><a href="#">My Labs</a></li>
+        <li><a href="#">Write-Ups</a></li>
+        <li><a href="#">Progress</a></li>
+        <li><a href="#">Error History</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 LabMind AI. Built for smarter programming education.</span>
+    <span>Made with 💜 for students</span>
+  </div>
+</footer>
+
+<div id="toast-container"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
