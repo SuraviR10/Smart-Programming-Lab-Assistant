@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Dashboard — AI Programming Lab</title>
+  <link rel="stylesheet" href="theme.css">
+  <style>
+    .exam-lock-bar {
+      display: flex; align-items: center; gap: 1rem; padding: 0.6rem 1.75rem;
+      background: linear-gradient(90deg, var(--danger-bg), var(--warning-bg));
+      border-bottom: 1px solid rgba(220,38,38,0.2);
+      font-size: 0.82rem; font-weight: 600;
+    }
+    .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--danger); animation: pulse-warn 0.8s infinite; flex-shrink: 0; }
+    .score-ring { position: relative; width: 80px; height: 80px; }
+    .score-ring svg { transform: rotate(-90deg); }
+    .score-ring-val { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 1.1rem; font-weight: 800; }
+  </style>
+</head>
+<body>
+<div class="app-layout">
+
+  <!-- ═══════ SIDEBAR ═══════ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-brand">
+        <div class="sidebar-logo">🎓</div>
+        <div class="sidebar-brand-text">
+          <h3>AI Lab Assistant</h3>
+          <span>Student Portal</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-user">
+      <div class="sidebar-avatar">RK</div>
+      <div class="sidebar-user-info">
+        <span>Ravi Kumar</span>
+        <small>Roll: CS001 · Sec A</small>
+      </div>
+      <div class="sidebar-online"></div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-label">Overview</div>
+      <a class="nav-link active" onclick="showSection('dashboard')">
+        <span class="nav-icon">🏠</span> Dashboard
+      </a>
+
+      <div class="sidebar-section-label">Learning</div>
+      <a class="nav-link" onclick="showSection('labs')">
+        <span class="nav-icon">🧪</span> My Labs
+      </a>
+      <a class="nav-link" onclick="showSection('editor')">
+        <span class="nav-icon">💻</span> Code Editor
+      </a>
+
+      <div class="sidebar-section-label">Assessments</div>
+      <a class="nav-link" onclick="showSection('writeups')">
+        <span class="nav-icon">📝</span> Write-Ups
+        <span class="nav-badge">1</span>
+      </a>
+      <a class="nav-link" onclick="showSection('exams')">
+        <span class="nav-icon">📋</span> Exams
+      </a>
+
+      <div class="sidebar-section-label">Progress</div>
+      <a class="nav-link" onclick="showSection('results')">
+        <span class="nav-icon">📊</span> Results
+      </a>
+      <a class="nav-link" onclick="showSection('profile')">
+        <span class="nav-icon">👤</span> Profile
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;padding:0 0.25rem">
+        <span style="font-size:0.75rem;color:rgba(255,255,255,0.4)">Dark Mode</span>
+        <div class="theme-toggle" id="sidebarTheme" onclick="toggleTheme(this)"></div>
+      </div>
+      <a class="nav-link" href="login.html">
+        <span class="nav-icon">🚪</span> Logout
+      </a>
+    </div>
+  </aside>
+
+  <!-- ═══════ MAIN ═══════ -->
+  <div class="main-area">
+
+    <!-- Exam lock bar (shows during assessment) -->
+    <div class="exam-lock-bar" id="exam-lock-bar" style="display:none">
+      <div class="live-dot"></div>
+      <span style="color:var(--danger)">WRITE-UP ACTIVE</span>
+      <span style="color:var(--text-2)">Write-Up 4: Sorting Algorithms · C Programming Lab</span>
+      <span style="margin-left:auto;color:var(--danger)" id="exam-timer-bar">⏱ 19:45 remaining</span>
+    </div>
+
+    <header class="top-header">
+      <div class="header-left">
+        <div>
+          <h2 id="section-title">Dashboard</h2>
+          <div class="breadcrumb">Student Portal › <span id="section-bc">Home</span></div>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="header-search">
+          <span style="color:var(--text-4);font-size:0.85rem">🔍</span>
+          <input type="text" placeholder="Search programs, labs...">
+        </div>
+        <div class="header-btn" onclick="showToast('No new notifications','info')">🔔</div>
+        <div class="header-user">
+          <div class="header-avatar">RK</div>
+          <div class="header-user-info">
+            <span>Ravi Kumar</span>
+            <small>CS001</small>
+          </div>
+          <span style="color:var(--text-4);font-size:0.7rem;margin-left:0.25rem">▾</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- ─────────────────────────────────────
+         SECTION: DASHBOARD
+    ───────────────────────────────────── -->
+    <div id="sec-dashboard" class="page-content">
+      <div class="page-header">
+        <h1>Welcome back, Ravi 👋</h1>
+        <p>You have 1 pending write-up · Thursday, 16 January 2025</p>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-card-top"><div class="stat-icon si-blue">📝</div><span class="stat-trend trend-up">↑ 2 this week</span></div>
+          <div class="stat-value">12</div>
+          <div class="stat-label">Total Write-Ups</div>
+          <div class="stat-card-bar bar-blue"></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-top"><div class="stat-icon si-green">✅</div><span class="stat-trend trend-up">↑ 80%</span></div>
+          <div class="stat-value">10</div>
+          <div class="stat-label">Completed</div>
+          <div class="stat-card-bar bar-green"></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-top"><div class="stat-icon si-purple">🏆</div><span class="stat-trend trend-up">↑ 5%</span></div>
+          <div class="stat-value">87%</div>
+          <div class="stat-label">Average Score</div>
+          <div class="stat-card-bar bar-purple"></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-top"><div class="stat-icon si-yellow">📋</div><span class="stat-trend trend-down">Due today</span></div>
+          <div class="stat-value">1</div>
+          <div class="stat-label">Upcoming Exams</div>
+          <div class="stat-card-bar bar-yellow"></div>
+        </div>
+      </div>
+
+      <div class="grid grid-2 gap-3 mb-3">
+        <!-- Pending Write-Up -->
+        <div class="card" style="border-left:4px solid var(--danger)">
+          <div class="card-header">
+            <div class="card-title">🔴 Pending Write-Up</div>
+            <span class="badge badge-danger">Due Today</span>
+          </div>
+          <div class="card-body">
+            <div style="margin-bottom:1rem">
+              <div class="fw-700" style="font-size:1rem;margin-bottom:0.25rem">Write-Up 4: Sorting Algorithms</div>
+              <div class="text-sm text-muted mb-3">C Programming Lab · Section A · Dr. Ramesh Kumar</div>
+              <div class="flex-between mb-2">
+                <span class="text-sm text-muted">Time Allowed</span>
+                <span class="fw-600 text-sm">20 minutes</span>
+              </div>
+              <div class="flex-between mb-2">
+                <span class="text-sm text-muted">Total Marks</span>
+                <span class="fw-600 text-sm">10 marks</span>
+              </div>
+              <div class="flex-between">
+                <span class="text-sm text-muted">Programs</span>
+                <span class="fw-600 text-sm">Bubble Sort, Selection Sort</span>
+              </div>
+            </div>
+            <button class="btn btn-primary btn-full btn-lg" onclick="startWriteUp()">🚀 Start Write-Up Now</button>
+          </div>
+        </div>
+
+        <!-- Recent Scores -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">📈 Recent Scores</div>
+            <button class="btn btn-secondary btn-sm" onclick="showSection('results')">View All</button>
+          </div>
+          <div class="card-body">
+            <div id="recent-scores-chart" style="margin-bottom:1rem"></div>
+            <div style="display:flex;flex-direction:column;gap:0.6rem">
+              <div class="flex-between"><span class="text-sm">Write-Up 3 — Matrix Addition</span><strong class="text-success">9/10</strong></div>
+              <div class="flex-between"><span class="text-sm">Write-Up 2 — Fibonacci</span><strong class="text-success">8/10</strong></div>
+              <div class="flex-between"><span class="text-sm">Write-Up 1 — Factorial</span><strong class="text-success">9/10</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lab Progress -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🧪 Lab Progress Overview</div>
+          <button class="btn btn-secondary btn-sm" onclick="showSection('labs')">All Labs</button>
+        </div>
+        <div class="card-body">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.25rem">
+            <div>
+              <div class="flex-between mb-2"><span class="fw-600 text-sm">C Programming Lab</span><span class="text-sm text-muted">8/10</span></div>
+              <div class="progress-bar"><div class="progress-fill" style="width:80%"></div></div>
+              <div class="text-xs text-muted mt-1">80% Complete</div>
+            </div>
+            <div>
+              <div class="flex-between mb-2"><span class="fw-600 text-sm">Data Structures Lab</span><span class="text-sm text-muted">7/12</span></div>
+              <div class="progress-bar"><div class="progress-fill green" style="width:58%"></div></div>
+              <div class="text-xs text-muted mt-1">58% Complete</div>
+            </div>
+            <div>
+              <div class="flex-between mb-2"><span class="fw-600 text-sm">ML Lab</span><span class="text-sm text-muted">2/8</span></div>
+              <div class="progress-bar"><div class="progress-fill yellow" style="width:25%"></div></div>
+              <div class="text-xs text-muted mt-1">25% Complete</div>
+            </div>
+            <div>
+              <div class="flex-between mb-2"><span class="fw-600 text-sm">Full Stack Dev Lab</span><span class="text-sm text-muted">7/15</span></div>
+              <div class="progress-bar"><div class="progress-fill gradient" style="width:47%"></div></div>
+              <div class="text-xs text-muted mt-1">47% Complete</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─────────────────────────────────────
+         SECTION: LABS
+    ───────────────────────────────────── -->
+    <div id="sec-labs" class="page-content hidden">
+      <div class="page-header">
+        <h1>My Laboratories</h1>
+        <p>All enrolled laboratories and their progress</p>
+      </div>
+      <div class="lab-cards-grid" id="student-labs-grid"></div>
+    </div>
+
+    <!-- ─────────────────────────────────────
+         SECTION: CODE EDITOR
+    ───────────────────────────────────── -->
+    <div id="sec-editor" class="page-content hidden" style="padding:1rem">
+      <div class="editor-layout">
+
+        <!-- LEFT: Question -->
+        <div class="editor-panel">
+          <div class="editor-panel-header">
+            <h3>📋 Problem Statement</h3>
+            <span class="badge badge-brand">Write-Up 4</span>
+          </div>
+          <div class="editor-panel-body">
+            <div style="background:var(--bg-2);border-radius:var(--radius);padding:0.875rem;margin-bottom:1rem">
+              <div class="fw-700 mb-1" style="color:var(--brand)">Program 4: Sorting Algorithms</div>
+              <div class="text-xs text-muted">C Programming Lab · 10 Marks · 20 min</div>
+            </div>
+
+            <div class="mb-3">
+              <div class="fw-600 text-sm mb-1">📌 Description</div>
+              <div class="text-sm text-muted" style="line-height:1.7">Write a C program to implement <strong>Bubble Sort</strong> to sort an array of integers in ascending order. Print the sorted array.</div>
+            </div>
+
+            <div class="mb-3">
+              <div class="fw-600 text-sm mb-2">📥 Sample Input</div>
+              <div style="background:#1e1e2e;border-radius:var(--radius-sm);padding:0.75rem;font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:#cdd6f4">5<br>64 34 25 12 22</div>
+            </div>
+
+            <div class="mb-3">
+              <div class="fw-600 text-sm mb-2">📤 Expected Output</div>
+              <div style="background:#1e1e2e;border-radius:var(--radius-sm);padding:0.75rem;font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:#a6e3a1">Sorted: 12 22 25 34 64</div>
+            </div>
+
+            <div class="card mb-3" style="border-color:rgba(37,99,235,0.2)">
+              <div class="card-body" style="padding:0.875rem">
+                <div class="fw-600 text-sm mb-2">📊 Marks Breakdown</div>
+                <div style="display:flex;flex-direction:column;gap:0.5rem">
+                  <div class="flex-between"><span class="text-sm">Compilation Success</span><span class="badge badge-success">3 marks</span></div>
+                  <div class="flex-between"><span class="text-sm">Output Correctness</span><span class="badge badge-brand">4 marks</span></div>
+                  <div class="flex-between"><span class="text-sm">Logic Structure</span><span class="badge badge-info">3 marks</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div style="background:var(--warning-bg);border:1px solid rgba(217,119,6,0.2);border-radius:var(--radius);padding:0.75rem;font-size:0.78rem;color:var(--warning)">
+              ⏱ <strong>Time Remaining:</strong> <span id="editor-timer">19:45</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- CENTER: Code Editor -->
+        <div class="editor-panel code-panel">
+          <div class="editor-panel-header">
+            <h3 style="color:#cdd6f4">main.c</h3>
+            <div style="display:flex;gap:0.5rem;align-items:center">
+              <span class="lang-badge">C</span>
+              <span style="font-size:0.72rem;color:#585b70">GCC 12.3</span>
+            </div>
+          </div>
+          <div class="code-toolbar">
+            <button class="btn btn-sm" style="background:#313244;color:#89b4fa;border:1px solid #45475a" onclick="compileCode()">▶ Compile</button>
+            <button class="btn btn-sm" style="background:#313244;color:#a6e3a1;border:1px solid #45475a" onclick="runCode()">⚡ Run</button>
+            <button class="btn btn-sm" style="background:#313244;color:#f38ba8;border:1px solid #45475a" onclick="resetCode()">↺ Reset</button>
+            <div style="margin-left:auto">
+              <button class="btn btn-primary btn-sm" onclick="submitCode()">📤 Submit Solution</button>
+            </div>
+          </div>
+
+          <div class="code-area-wrap">
+            <textarea class="code-area" id="code-textarea" spellcheck="false">
+#include <stdio.h>
+
+int main() {
+    int n, i, j, temp;
+    int a[100];
+
+    printf("Enter number of elements: ");
+    scanf("%d", &n);
+
+    printf("Enter elements: ");
+    for(i = 0; i < n; i++)
+        scanf("%d", &a[i]);
+
+    // Bubble Sort
+    for(i = 0; i < n-1; i++) {
+        for(j = 0; j < n-i-1; j++) {
+            if(a[j] > a[j+1]) {
+                temp = a[j];
+                a[j] = a[j+1];
+                a[j+1] = temp
+            }
+        }
+    }
+
+    printf("Sorted: ");
+    for(i = 0; i < n; i++)
+        printf("%d ", a[i]);
+
+    return 0;
+}</textarea>
+          </div>
+
+          <div class="console-area">
+            <div class="console-header">
+              <span>CONSOLE OUTPUT</span>
+              <button onclick="clearConsole()" style="background:none;border:none;color:#585b70;cursor:pointer;font-size:0.72rem">Clear</button>
+            </div>
+            <div class="console-body" id="console-body">
+              <div class="console-output cout-info">Ready. Click Compile to check for errors.</div>
+            </div>
+            <div class="console-input-wrap">
+              <input class="console-input" id="stdin-input" placeholder="stdin — Enter input here...">
+              <button class="btn btn-sm" style="background:#313244;color:#a6e3a1;border:1px solid #45475a" onclick="runCode()">▶ Run</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: AI Error Panel -->
+        <div class="editor-panel">
+          <div class="ai-panel-header">
+            <div class="ai-dot"></div>
+            <span style="font-size:0.82rem;font-weight:700;color:var(--brand)">🤖 AI Error Assistant</span>
+          </div>
+          <div class="editor-panel-body" id="ai-panel-body">
+            <div style="text-align:center;padding:2rem 1rem;color:var(--text-4)">
+              <div style="font-size:2rem;margin-bottom:0.75rem">🤖</div>
+              <div class="text-sm fw-600" style="color:var(--text-3)">AI Assistant Ready</div>
+              <div class="text-xs" style="margin-top:0.35rem">Compile your code to get instant AI-powered error explanations</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ─────────────────────────────────────
+         SECTION: WRITE-UPS
+    ───────────────────────────────────── -->
+    <div id="sec-writeups" class="page-content hidden">
+      <div class="page-header">
+        <h1>Write-Ups</h1>
+        <p>All assigned programming write-up assessments</p>
+      </div>
+
+      <div class="card">
+        <div class="table-wrap">
+          <table class="table">
+            <thead><tr><th>#</th><th>Title</th><th>Lab</th><th>Duration</th><th>Marks</th><th>Due Date</th><th>Status</th><th>Score</th><th>Action</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>Factorial Program</td><td>C Lab</td><td>15 min</td><td>10</td><td>Jan 5</td><td><span class="badge badge-success">Completed</span></td><td><strong class="text-success">9/10</strong></td><td><button class="btn btn-secondary btn-sm" onclick="showToast('Viewing submission...','info')">View</button></td></tr>
+              <tr><td>2</td><td>Fibonacci Series</td><td>C Lab</td><td>15 min</td><td>10</td><td>Jan 8</td><td><span class="badge badge-success">Completed</span></td><td><strong class="text-success">8/10</strong></td><td><button class="btn btn-secondary btn-sm" onclick="showToast('Viewing submission...','info')">View</button></td></tr>
+              <tr><td>3</td><td>Matrix Addition</td><td>C Lab</td><td>20 min</td><td>10</td><td>Jan 12</td><td><span class="badge badge-success">Completed</span></td><td><strong class="text-success">9/10</strong></td><td><button class="btn btn-secondary btn-sm" onclick="showToast('Viewing submission...','info')">View</button></td></tr>
+              <tr style="background:var(--brand-light)"><td>4</td><td><strong>Sorting Algorithms</strong></td><td>C Lab</td><td>20 min</td><td>10</td><td class="text-danger fw-600">Today</td><td><span class="badge badge-danger">Pending 🔴</span></td><td>—</td><td><button class="btn btn-primary btn-sm" onclick="startWriteUp()">🚀 Start Now</button></td></tr>
+              <tr><td>5</td><td>Linked List</td><td>DS Lab</td><td>30 min</td><td>15</td><td>Jan 20</td><td><span class="badge badge-brand">Upcoming</span></td><td>—</td><td><button class="btn btn-secondary btn-sm" disabled>Locked</button></td></tr>
+              <tr><td>6</td><td>Binary Search</td><td>DS Lab</td><td>20 min</td><td>10</td><td>Jan 22</td><td><span class="badge badge-gray">Not Started</span></td><td>—</td><td><button class="btn btn-secondary btn-sm" disabled>Locked</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─────────────────────────────────────
+         SECTION: EXAMS
+    ───────────────────────────────────── -->
+    <div id="sec-exams" class="page-content hidden">
+      <div class="page-header">
+        <h1>Examinations</h1>
+        <p>Upcoming and completed lab examinations</p>
+      </div>
+
+      <div class="grid grid-2 gap-3 mb-3">
+        <div class="card" style="border-left:4px solid var(--brand)">
+          <div class="card-header">
+            <div class="card-title">📋 Upcoming Exam</div>
+            <span class="badge badge-brand">In 4 days</span>
+          </div>
+          <div class="card-body">
+            <div class="fw-700" style="font-size:1rem;margin-bottom:0.5rem">Internal Lab Exam 2</div>
+            <div style="display:flex;flex-direction:column;gap:0.6rem;margin-bottom:1rem">
+              <div class="flex-between"><span class="text-sm text-muted">Laboratory</span><span class="text-sm fw-600">Data Structures Lab</span></div>
+              <div class="flex-between"><span class="text-sm text-muted">Date</span><span class="text-sm fw-600">February 20, 2025</span></div>
+              <div class="flex-between"><span class="text-sm text-muted">Time</span><span class="text-sm fw-600">10:00 AM – 12:00 PM</span></div>
+              <div class="flex-between"><span class="text-sm text-muted">Duration</span><span class="text-sm fw-600">2 hours</span></div>
+              <div class="flex-between"><span class="text-sm text-muted">Total Marks</span><span class="text-sm fw-600">50 marks</span></div>
+            </div>
+            <div style="background:var(--warning-bg);border:1px solid rgba(217,119,6,0.2);border-radius:var(--radius);padding:0.75rem;font-size:0.8rem;color:var(--warning)">
+              ⚠️ Exam will be in fullscreen mode. Tab switching will be monitored and flagged.
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div class="card-title">📋 Exam History</div></div>
+          <div class="table-wrap">
+            <table class="table">
+              <thead><tr><th>Exam</th><th>Lab</th><th>Date</th><th>Score</th><th>Grade</th></tr></thead>
+              <tbody>
+                <tr><td>Internal Lab Exam 1</td><td>C Lab</td><td>Jan 15</td><td><strong class="text-success">43/50</strong></td><td><span class="badge badge-success">A</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─────────────────────────────────────
+         SECTION: RESULTS
+    ───────────────────────────────────── -->
+    <div id="sec-results" class="page-content hidden">
+      <div class="page-header">
+        <h1>My Results</h1>
+        <p>Assessment history and performance analytics</p>
+      </div>
+
+      <div class="stat-grid mb-4">
+        <div class="stat-card"><div class="stat-card-top"><div class="stat-icon si-blue">📊</div><span class="stat-trend trend-up">↑ 5%</span></div><div class="stat-value">87%</div><div class="stat-label">Overall Average</div><div class="stat-card-bar bar-blue"></div></div>
+        <div class="stat-card"><div class="stat-card-top"><div class="stat-icon si-green">🏆</div></div><div class="stat-value">10/10</div><div class="stat-label">Best Score</div><div class="stat-card-bar bar-green"></div></div>
+        <div class="stat-card"><div class="stat-card-top"><div class="stat-icon si-purple">📝</div></div><div class="stat-value">10</div><div class="stat-label">Completed</div><div class="stat-card-bar bar-purple"></div></div>
+        <div class="stat-card"><div class="stat-card-top"><div class="stat-icon si-cyan">🤖</div></div><div class="stat-value">12</div><div class="stat-label">AI Assists</div><div class="stat-card-bar bar-blue"></div></div>
+      </div>
+
+      <div class="grid grid-2 gap-3 mb-3">
+        <div class="card">
+          <div class="card-header"><div class="card-title">📈 Score Progression</div></div>
+          <div class="card-body"><div class="bar-chart" id="results-chart"></div><div class="bar-chart-labels" id="results-chart-labels"></div></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">🏅 Lab-wise Performance</div></div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:1rem">
+            <div><div class="flex-between mb-1"><span class="fw-600 text-sm">C Programming Lab</span><span class="fw-600 text-sm text-success">87%</span></div><div class="progress-bar"><div class="progress-fill" style="width:87%"></div></div></div>
+            <div><div class="flex-between mb-1"><span class="fw-600 text-sm">Data Structures Lab</span><span class="fw-600 text-sm text-success">74%</span></div><div class="progress-bar"><div class="progress-fill green" style="width:74%"></div></div></div>
+            <div><div class="flex-between mb-1"><span class="fw-600 text-sm">ML Lab</span><span class="fw-600 text-sm text-warning">60%</span></div><div class="progress-bar"><div class="progress-fill yellow" style="width:60%"></div></div></div>
+            <div><div class="flex-between mb-1"><span class="fw-600 text-sm">Full Stack Dev Lab</span><span class="fw-600 text-sm">78%</span></div><div class="progress-bar"><div class="progress-fill gradient" style="width:78%"></div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📋 Assessment History</div>
+          <button class="btn btn-secondary btn-sm" onclick="showToast('Downloading report...','info')">📥 Download</button>
+        </div>
+        <div class="table-wrap">
+          <table class="table">
+            <thead><tr><th>Assessment Name</th><th>Lab</th><th>Date</th><th>Compilation</th><th>Output</th><th>Logic</th><th>Total</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>Write-Up 1 — Factorial</td><td>C Lab</td><td>Jan 5</td><td>3/3</td><td>4/4</td><td>2/3</td><td><strong class="text-success">9/10</strong></td><td><span class="badge badge-success">Graded</span></td></tr>
+              <tr><td>Write-Up 2 — Fibonacci</td><td>C Lab</td><td>Jan 8</td><td>3/3</td><td>3/4</td><td>2/3</td><td><strong class="text-success">8/10</strong></td><td><span class="badge badge-success">Graded</span></td></tr>
+              <tr><td>Write-Up 3 — Matrix Addition</td><td>C Lab</td><td>Jan 12</td><td>3/3</td><td>4/4</td><td>2/3</td><td><strong class="text-success">9/10</strong></td><td><span class="badge badge-success">Graded</span></td></tr>
+              <tr><td>Internal Lab Exam 1</td><td>C Lab</td><td>Jan 15</td><td>—</td><td>—</td><td>—</td><td><strong class="text-success">43/50</strong></td><td><span class="badge badge-success">Graded</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─────────────────────────────────────
+         SECTION: PROFILE
+    ───────────────────────────────────── -->
+    <div id="sec-profile" class="page-content hidden">
+      <div class="page-header">
+        <h1>My Profile</h1>
+      </div>
+      <div class="grid grid-2 gap-3">
+        <div class="card" style="overflow:hidden">
+          <div class="profile-cover"></div>
+          <div class="profile-info">
+            <div class="profile-avatar-wrap">RK</div>
+            <div class="profile-name">Ravi Kumar</div>
+            <div class="profile-role">🎓 B.Tech Computer Science · 3rd Year</div>
+            <div class="profile-grid">
+              <div class="profile-field"><div class="profile-field-label">Roll No</div><div class="profile-field-val">CS001</div></div>
+              <div class="profile-field"><div class="profile-field-label">Department</div><div class="profile-field-val">Computer Science</div></div>
+              <div class="profile-field"><div class="profile-field-label">Semester</div><div class="profile-field-val">4th Semester</div></div>
+              <div class="profile-field"><div class="profile-field-label">Section</div><div class="profile-field-val">Section A</div></div>
+              <div class="profile-field"><div class="profile-field-label">Academic Year</div><div class="profile-field-val">2024–2025</div></div>
+              <div class="profile-field"><div class="profile-field-label">Email</div><div class="profile-field-val" style="font-size:0.78rem">ravi.cs001@college.edu</div></div>
+            </div>
+            <div style="display:flex;gap:0.75rem;margin-top:1.5rem">
+              <button class="btn btn-primary" onclick="openModal('modal-edit-profile')">✏️ Edit Profile</button>
+              <button class="btn btn-secondary" onclick="openModal('modal-change-pw')">🔑 Change Password</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:1rem">
+          <div class="card">
+            <div class="card-header"><div class="card-title">📊 Quick Stats</div></div>
+            <div class="card-body">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem">
+                <div style="text-align:center;background:var(--bg-2);border-radius:var(--radius);padding:1rem"><div class="fw-800" style="font-size:1.5rem;color:var(--brand)">87%</div><div class="text-xs text-muted">Avg Score</div></div>
+                <div style="text-align:center;background:var(--bg-2);border-radius:var(--radius);padding:1rem"><div class="fw-800" style="font-size:1.5rem;color:var(--success)">10</div><div class="text-xs text-muted">Completed</div></div>
+                <div style="text-align:center;background:var(--bg-2);border-radius:var(--radius);padding:1rem"><div class="fw-800" style="font-size:1.5rem;color:var(--warning)">12</div><div class="text-xs text-muted">AI Assists</div></div>
+                <div style="text-align:center;background:var(--bg-2);border-radius:var(--radius);padding:1rem"><div class="fw-800" style="font-size:1.5rem;color:var(--info)">4</div><div class="text-xs text-muted">Labs Enrolled</div></div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">🔴 Recent Errors Fixed</div></div>
+            <div class="card-body" style="padding:0">
+              <div style="display:flex;flex-direction:column">
+                <div style="padding:0.875rem 1rem;border-bottom:1px solid var(--border);font-size:0.82rem"><div class="fw-600">Missing Semicolon</div><div class="text-xs text-muted">Line 18 · main.c · Today</div></div>
+                <div style="padding:0.875rem 1rem;border-bottom:1px solid var(--border);font-size:0.82rem"><div class="fw-600">Undeclared Variable 'j'</div><div class="text-xs text-muted">Matrix Addition · Jan 12</div></div>
+                <div style="padding:0.875rem 1rem;font-size:0.82rem"><div class="fw-600">Missing #include &lt;stdio.h&gt;</div><div class="text-xs text-muted">Fibonacci · Jan 8</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end main-area -->
+</div><!-- end app-layout -->
+
+<!-- ═══════ MODALS ═══════ -->
+<div class="modal-overlay" id="modal-edit-profile">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>✏️ Edit Profile</h2>
+      <button class="modal-close" onclick="closeModal('modal-edit-profile')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row"><div class="form-group"><label class="form-label">First Name</label><input class="form-control" value="Ravi"></div><div class="form-group"><label class="form-label">Last Name</label><input class="form-control" value="Kumar"></div></div>
+      <div class="form-group"><label class="form-label">Email</label><input class="form-control" value="ravi.cs001@college.edu" type="email"></div>
+      <div class="form-row"><div class="form-group"><label class="form-label">Department</label><input class="form-control" value="Computer Science"></div><div class="form-group"><label class="form-label">Section</label><select class="form-control"><option>Section A</option><option>Section B</option></select></div></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-edit-profile')">Cancel</button>
+      <button class="btn btn-primary" onclick="closeModal('modal-edit-profile');showToast('Profile updated successfully!','success')">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-change-pw">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>🔑 Change Password</h2>
+      <button class="modal-close" onclick="closeModal('modal-change-pw')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Current Password</label><input class="form-control" type="password" placeholder="Enter current password"></div>
+      <div class="form-group"><label class="form-label">New Password</label><input class="form-control" type="password" placeholder="Enter new password"></div>
+      <div class="form-group"><label class="form-label">Confirm New Password</label><input class="form-control" type="password" placeholder="Confirm new password"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-change-pw')">Cancel</button>
+      <button class="btn btn-primary" onclick="closeModal('modal-change-pw');showToast('Password changed successfully!','success')">Change Password</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-root"></div>
+<script src="main.js"></script>
+</body>
+</html>

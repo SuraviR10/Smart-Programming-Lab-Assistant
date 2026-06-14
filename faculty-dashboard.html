@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Faculty Dashboard — AI Programming Lab</title>
+  <link rel="stylesheet" href="theme.css">
+</head>
+<body>
+<div class="app-layout">
+
+  <!-- ═══════ SIDEBAR ═══════ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-brand">
+        <div class="sidebar-logo">🧪</div>
+        <div class="sidebar-brand-text">
+          <h3>AI Lab Assistant</h3>
+          <span>Faculty Portal</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-user">
+      <div class="sidebar-avatar">DR</div>
+      <div class="sidebar-user-info">
+        <span>Dr. Ramesh Kumar</span>
+        <small>Associate Professor</small>
+      </div>
+      <div class="sidebar-online"></div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-label">Overview</div>
+      <a class="nav-link active" onclick="showSection('dashboard')">
+        <span class="nav-icon">📊</span> Dashboard
+      </a>
+
+      <div class="sidebar-section-label">Laboratory</div>
+      <a class="nav-link" onclick="showSection('manage-labs')">
+        <span class="nav-icon">🧪</span> Manage Labs
+      </a>
+      <a class="nav-link" onclick="showSection('lab-manual')">
+        <span class="nav-icon">📚</span> Upload Lab Manual
+      </a>
+
+      <div class="sidebar-section-label">Assessments</div>
+      <a class="nav-link" onclick="showSection('create-writeup')">
+        <span class="nav-icon">📝</span> Create Write-Up
+        <span class="nav-badge info">3</span>
+      </a>
+      <a class="nav-link" onclick="showSection('create-exam')">
+        <span class="nav-icon">📋</span> Create Exam
+      </a>
+
+      <div class="sidebar-section-label">Analytics</div>
+      <a class="nav-link" onclick="showSection('student-perf')">
+        <span class="nav-icon">📈</span> Student Performance
+      </a>
+      <a class="nav-link" onclick="showSection('monitoring')">
+        <span class="nav-icon">👁️</span> Live Monitoring
+        <span class="nav-badge">2</span>
+      </a>
+      <a class="nav-link" onclick="showSection('reports')">
+        <span class="nav-icon">📄</span> Reports
+      </a>
+
+      <div class="sidebar-section-label">System</div>
+      <a class="nav-link" onclick="showSection('notifications')">
+        <span class="nav-icon">🔔</span> Notifications
+        <span class="nav-badge">5</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;padding:0 0.25rem">
+        <span style="font-size:0.75rem;color:rgba(255,255,255,0.4)">Dark Mode</span>
+        <div class="theme-toggle" id="sidebarTheme" onclick="toggleTheme(this)"></div>
+      </div>
+      <a class="nav-link" href="login.html">
+        <span class="nav-icon">🚪</span> Logout
+      </a>
+    </div>
+  </aside>
+
+  <!-- ═══════ MAIN ═══════ -->
+  <div class="main-area">
+    <header class="top-header">
+      <div class="header-left">
+        <button class="header-btn" onclick="toggleMobileSidebar()" style="display:none" id="mob-menu">☰</button>
+        <div>
+          <h2 id="section-title">Dashboard</h2>
+          <div class="breadcrumb">Faculty Portal › <span id="section-bc">Overview</span></div>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="header-search">
+          <span style="color:var(--text-4);font-size:0.85rem">🔍</span>
+          <input type="text" placeholder="Search students, labs...">
+        </div>
+        <div class="header-btn" onclick="showSection('notifications')">
+          🔔 <div class="header-notif">5</div>
+        </div>
+        <div class="header-user" onclick="showToast('Profile page coming soon','info')">
+          <div class="header-avatar">DR</div>
+          <div class="header-user-info">
+            <span>Dr. Ramesh</span>
+            <small>Faculty</small>
+          </div>
+          <span style="color:var(--text-4);font-size:0.7rem;margin-left:0.25rem">▾</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- ─────────────────────────────────────
+         SECTION: DASHBOARD
+    ───────────────────────────────────── -->
+    <div id="sec-dashboard" class="page-content">
+      <div class="page-header">
+        <h1>Good morning, Dr. Ramesh 👋</h1>
+        <p>Here's what's happening in your labs today — Thursday, 16 January 2025</p>
+      </div>
+
+      <!-- Stats -->
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <div class="stat-icon si-blue">👥</div>
+            <span class="stat-trend trend-up">↑ 12</span>
+          </div>
+          <div class="stat-value">142</div>
+          <div class="stat-label">Total Students</div>
+          <div class="stat-card-bar bar-blue"></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <div class="stat-icon si-green">🧪</div>
+            <span class="stat-trend trend-up">↑ 1</span>
+          </div>
+          <div class="stat-value">6</div>
+          <div class="stat-label">Active Labs</div>
+          <div class="stat-card-bar bar-green"></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <div class="stat-icon si-purple">📝</div>
+            <span class="stat-trend trend-neutral">+2 this week</span>
+          </div>
+          <div class="stat-value">18</div>
+          <div class="stat-label">Write-Ups Conducted</div>
+          <div class="stat-card-bar bar-purple"></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <div class="stat-icon si-yellow">⏰</div>
+            <span class="stat-trend trend-neutral">Today</span>
+          </div>
+          <div class="stat-value">3</div>
+          <div class="stat-label">Upcoming Assessments</div>
+          <div class="stat-card-bar bar-yellow"></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <div class="stat-icon si-cyan">📊</div>
+            <span class="stat-trend trend-up">↑ 5%</span>
+          </div>
+          <div class="stat-value">78%</div>
+          <div class="stat-label">Avg. Class Score</div>
+          <div class="stat-card-bar bar-blue"></div>
+        </div>
+      </div>
+
+      <div class="grid grid-2 gap-3 mb-4">
+        <!-- Recent Activity -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">⚡ Recent Activity</div>
+            <button class="btn btn-secondary btn-sm">View All</button>
+          </div>
+          <div class="table-wrap">
+            <table class="table">
+              <thead>
+                <tr><th>Student Name</th><th>Lab</th><th>Assessment</th><th>Marks</th><th>Status</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><div class="flex-center gap-2"><div class="header-avatar" style="width:28px;height:28px;font-size:0.65rem">RK</div>Ravi Kumar</div></td><td>C Programming</td><td>Write-Up 4</td><td><strong class="text-success">9/10</strong></td><td><span class="badge badge-success">Submitted</span></td></tr>
+                <tr><td><div class="flex-center gap-2"><div class="header-avatar" style="width:28px;height:28px;font-size:0.65rem;background:linear-gradient(135deg,#dc2626,#f97316)">AD</div>Arjun Das</div></td><td>C Programming</td><td>Write-Up 4</td><td><strong class="text-warning">6/10</strong></td><td><span class="badge badge-warning">Late Submit</span></td></tr>
+                <tr><td><div class="flex-center gap-2"><div class="header-avatar" style="width:28px;height:28px;font-size:0.65rem;background:linear-gradient(135deg,#7c3aed,#a78bfa)">PS</div>Priya Sharma</div></td><td>DS Lab</td><td>Write-Up 2</td><td><strong class="text-success">10/10</strong></td><td><span class="badge badge-success">Submitted</span></td></tr>
+                <tr><td><div class="flex-center gap-2"><div class="header-avatar" style="width:28px;height:28px;font-size:0.65rem;background:linear-gradient(135deg,#0891b2,#22d3ee)">MR</div>Meena R</div></td><td>C Programming</td><td>Write-Up 4</td><td>—</td><td><span class="badge badge-danger">Absent</span></td></tr>
+                <tr><td><div class="flex-center gap-2"><div class="header-avatar" style="width:28px;height:28px;font-size:0.65rem;background:linear-gradient(135deg,#16a34a,#4ade80)">AJ</div>Anjali Joshi</div></td><td>ML Lab</td><td>Exam 1</td><td><strong>43/50</strong></td><td><span class="badge badge-info">Graded</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Performance Chart -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">📈 Class Performance — C Lab</div>
+            <select class="form-control" style="width:auto;padding:0.3rem 0.6rem;font-size:0.78rem">
+              <option>Last 7 Write-Ups</option>
+              <option>This Month</option>
+              <option>This Semester</option>
+            </select>
+          </div>
+          <div class="card-body">
+            <div class="bar-chart" id="dash-chart"></div>
+            <div class="bar-chart-labels" id="dash-chart-labels"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Alerts & Top Performers -->
+      <div class="grid grid-2 gap-3">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">🚨 Active Alerts</div>
+            <span class="badge badge-danger">2 New</span>
+          </div>
+          <div class="notif-list">
+            <div class="notif-item unread" onclick="showSection('monitoring')">
+              <div class="notif-icon si-red" style="border-radius:var(--radius)">🚨</div>
+              <div class="notif-content">
+                <div class="notif-title">Arjun Das — Tab Switch Detected</div>
+                <div class="notif-desc">3 tab switches during Write-Up 4 · C Programming Lab</div>
+                <div class="notif-time">Today, 10:32 AM</div>
+              </div>
+              <div class="notif-unread-dot"></div>
+            </div>
+            <div class="notif-item unread" onclick="showSection('monitoring')">
+              <div class="notif-icon si-yellow" style="border-radius:var(--radius)">⚠️</div>
+              <div class="notif-content">
+                <div class="notif-title">Meena R — Left Exam Window</div>
+                <div class="notif-desc">Window left for 8 seconds during assessment</div>
+                <div class="notif-time">Today, 10:29 AM</div>
+              </div>
+              <div class="notif-unread-dot"></div>
+            </div>
+            <div class="notif-item">
+              <div class="notif-icon si-green" style="border-radius:var(--radius)">✅</div>
+              <div class="notif-content">
+                <div class="notif-title">Write-Up 3 — 38/42 Submitted</div>
+                <div class="notif-desc">Matrix Addition write-up auto-evaluated</div>
+                <div class="notif-time">Yesterday, 2:15 PM</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">🏆 Top Performers</div>
+            <button class="btn btn-secondary btn-sm" onclick="showSection('student-perf')">Full Report</button>
+          </div>
+          <div class="card-body">
+            <div id="top-performers-list"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─────────────────────────────────────
+         SECTION: MANAGE LABS
+    ───────────────────────────────────── -->
+    <div id="sec-manage-labs" class="page-content hidden">
+      <div class="page-toolbar">
+        <div class="page-header" style="margin:0">
+          <h1>Manage Labs</h1>
+          <p>Create and manage laboratory environments for your subjects</p>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('modal-create-lab')">+ Create New Lab</button>
+      </div>
+
+      <div class="lab-cards-grid" id="labs-grid"></div>
+    </div>
+
+    <!-- ─────────────────────────────────────
+         SECTION: LAB MANUAL
+    ───────────────────────────────────── -->
+    <div id="sec-lab-manual" class="page-content hidden">
+      <div class="page-header">
+        <h1>Upload Lab Manual</h1>
+        <p>Upload PDF lab manuals — the system will extract program listings automatically</p>
+      </div>
+
+      <div class="grid grid-2 gap-3 mb-4">
+        <div class="card">
+          <div class="card-header"><div class="card-title">📤 Upload Manual</div></div>
+          <div class="card-body">
+            <div class="form-group">
+              <label class="form-label">Select Laboratory</label>
+              <select class="form-control">
+                <option>C Programming Lab — Section A</option>
+                <option>Data Structures Lab — Section A</option>
+                <option>ML Lab — Section B</option>
+              </select>
+            </div>
+            <div class="upload-zone mb-3" id="upload-zone"
+              ondragover="event.preventDefault();this.classList.add('drag-over')"
+              ondragleave="this.classList.remove('drag-over')"
+              ondrop="handleDrop(event)"
+              onclick="document.getElementById('file-input').click()">
+              <input type="file" id="file-input" style="display:none" accept=".pdf" onchange="handleFileSelect(this)">
+              <div class="upload-icon">📄</div>
+              <h3>Drop PDF here or click to browse</h3>
+              <p>Supports PDF files up to 50 MB</p>
+            </div>
+            <button class="btn btn-primary btn-full" onclick="simulateUpload()">📤 Upload & Extract Programs</button>
+          </div>
+        </div>
+
+        <!-- Extracted Programs -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">📋 Extracted Programs</div>
+            <span class="badge badge-success">4 Found</span>
+          </div>
+          <div class="card-body" style="padding:0">
+            <div id="extracted-programs">
+              <div style="display:flex;flex-direction:column;gap:0">
+                <div onclick="showToast('Opening Program 1 editor...','info')" style="display:flex;align-items:center;gap:0.75rem;padding:0.875rem 1.25rem;border-bottom:1px solid var(--border);cursor:pointer;transition:background var(--transition)" onmouseover="this.style.background='var(--bg-2)'" onmouseout="this.style.background=''">
+                  <div class="stat-icon si-blue" style="width:34px;height:34px;font-size:0.85rem;flex-shrink:0">01</div>
+                  <div style="flex:1"><div class="fw-600 text-sm">Factorial Program</div><div class="text-xs text-muted">Compute n! using recursion and iteration</div></div>
+                  <span class="badge badge-success">5 test cases</span>
+                </div>
+                <div onclick="showToast('Opening Program 2 editor...','info')" style="display:flex;align-items:center;gap:0.75rem;padding:0.875rem 1.25rem;border-bottom:1px solid var(--border);cursor:pointer;transition:background var(--transition)" onmouseover="this.style.background='var(--bg-2)'" onmouseout="this.style.background=''">
+                  <div class="stat-icon si-green" style="width:34px;height:34px;font-size:0.85rem;flex-shrink:0">02</div>
+                  <div style="flex:1"><div class="fw-600 text-sm">Fibonacci Series</div><div class="text-xs text-muted">Print first n terms of Fibonacci</div></div>
+                  <span class="badge badge-success">4 test cases</span>
+                </div>
+                <div onclick="showToast('Opening Program 3 editor...','info')" style="display:flex;align-items:center;gap:0.75rem;padding:0.875rem 1.25rem;border-bottom:1px solid var(--border);cursor:pointer;transition:background var(--transition)" onmouseover="this.style.background='var(--bg-2)'" onmouseout="this.style.background=''">
+                  <div class="stat-icon si-purple" style="width:34px;height:34px;font-size:0.85rem;flex-shrink:0">03</div>
+                  <div style="flex:1"><div class="fw-600 text-sm">Matrix Addition</div><div class="text-xs text-muted">Add two m×n matrices</div></div>
+                  <span class="badge badge-warning">2 test cases</span>
+                </div>
+                <div onclick="showToast('Opening Program 4 editor...','info')" style="display:flex;align-items:center;gap:0.75rem;padding:0.875rem 1.25rem;cursor:pointer;transition:background var(--transition)" onmouseover="this.style.background='var(--bg-2)'" onmouseout="this.style.background=''">
+                  <div class="stat-icon si-yellow" style="width:34px;height:34px;font-size:0.85rem;flex-shrink:0">04</div>
+                  <div style="flex:1"><div class="fw-600 text-sm">Sorting Algorithms</div><div class="text-xs text-muted">Bubble, Selection, Insertion sort</div></div>
+                  <span class="badge badge-info">3 test cases</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Uploaded Manuals Table -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📚 Uploaded Manuals</div>
+          <button class="btn btn-secondary btn-sm" onclick="showToast('Exporting manual list...','info')">📥 Export</button>
+        </div>
+        <div class="table-wrap">
+          <table class="table">
+            <thead><tr><th>#</th><th>Manual Name</th><th>Subject</th><th>Upload Date</th><th>Programs</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>C Programming Lab Manual 2025</td><td>C Programming</td><td>Jan 10, 2025</td><td>10</td><td><span class="badge badge-success">Active</span></td><td><div class="table-actions"><button class="btn btn-secondary btn-sm">👁 View</button><button class="btn btn-secondary btn-sm">📥 Download</button></div></td></tr>
+              <tr><td>2</td><td>Data Structures Lab Manual</td><td>Data Structures</td><td>Jan 12, 2025</td><td>12</td><td><span class="badge badge-success">Active</span></td><td><div class="table-actions"><button class="btn btn-secondary btn-sm">👁 View</button><button class="btn btn-secondary btn-sm">📥 Download</button></div></td></tr>
+              <tr><td>3</td><td>ML Lab Practical Guide</td><td>Machine Learning</td><td>Jan 15, 2025</td><td>8</td><td><span class="badge badge-warning">Processing</span></td><td><div class="table-actions"><button class="btn btn-secondary btn-sm" disabled>👁 View</button></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─────────────────────────────────────
+         SECTION: CREATE WRITE-UP
+    ───────────────────────────────────── -->
+    <div id="sec-create-writeup" class="page-content hidden">
+      <div class="page-toolbar">
+        <div class="page-header" style="margin:0">
+          <h1>Create Write-Up</h1>
+          <p>Schedule timed programming assessments for students</p>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('modal-writeup')">+ New Write-Up</button>
+      </div>
+
+      <div class="card mb-4">
+        <div class="card-header"><div class="card-title">📝 All Write-Ups</div></div>
+        <div class="table-wrap">
+          <table class="table">
+            <thead><tr><th>#</th><th>Title</th><th>Lab</th><th>Program</th><th>Duration</th><th>Marks</th><th>Submissions</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>Factorial Program</td><td>C Lab</td><td>Program 1</td><td>15 min</td><td>10</td><td>42/42</td><td><span class="badge badge-success">Completed</span></td><td><div class="table-actions"><button class="btn btn-secondary btn-sm" onclick="showSection('reports')">Results</button></div></td></tr>
+              <tr><td>2</td><td>Fibonacci Series</td><td>C Lab</td><td>Program 2</td><td>15 min</td><td>10</td><td>41/42</td><td><span class="badge badge-success">Completed</span></td><td><div class="table-actions"><button class="btn btn-secondary btn-sm" onclick="showSection('reports')">Results</button></div></td></tr>
+              <tr><td>3</td><td>Matrix Addition</td><td>C Lab</td><td>Program 3</td><td>20 min</td><td>10</td><td>38/42</td><td><span class="badge badge-success">Completed</span></td><td><div class="table-actions"><button class="btn btn-secondary btn-sm" onclick="showSection('reports')">Results</button></div></td></tr>
+              <tr><td>4</td><td>Sorting Algorithms</td><td>C Lab</td><td>Program 4</td><td>20 min</td><td>10</td><td><strong class="text-brand">15/42</strong></td><td><span class="badge badge-danger">🔴 Live</span></td><td><div class="table-actions"><button class="btn btn-primary btn-sm" onclick="showSection('monitoring')">Monitor</button></div></td></tr>
+              <tr><td>5</td><td>Linked List</td><td>DS Lab</td><td>Program 5</td><td>30 min</td><td>15</td><td>—</td><td><span class="badge badge-brand">Scheduled</span></td><td><div class="table-actions"><button class="btn btn-secondary btn-sm">Edit</button><button class="btn btn-secondary btn-sm text-danger">Delete</button></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─────────────────────────────────────
+         SECTION: CREATE EXAM
+    ───────────────────────────────────── -->
+    <div id="sec-create-exam" class="page-content hidden">
+      <div class="page-toolbar">
+        <div class="page-header" style="margin:0">
+          <h1>Create Examination</h1>
+          <p>Configure secure lab examinations with monitoring and auto-submit</p>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('modal-exam')">+ New Exam</button>
+      </div>
+
+      <div class="grid grid-2 gap-3">
+        <div class="card">
+          <div class="card-header"><div class="card-title">⚙️ Exam Settings Panel</div></div>
+          <div class="card-body">
+            <div class="form-group"><label class="form-label">Exam Name</label><input class="form-control" value="Internal Lab Exam 1 — C Programming"></div>
+            <div class="form-group"><label class="form-label">Select Laboratory</label>
+              <select class="form-control"><option>C Programming Lab — Section A</option><option>DS Lab</option></select>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">Duration (hrs)</label><input type="number" class="form-control" value="2"></div>
+              <div class="form-group"><label class="form-label">Total Marks</label><input type="number" class="form-control" value="50"></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">Start Time</label><input type="datetime-local" class="form-control"></div>
+              <div class="form-group"><label class="form-label">End Time</label><input type="datetime-local" class="form-control"></div>
+            </div>
+
+            <div class="card mb-3" style="border:1.5px solid var(--border-2)">
+              <div class="card-body" style="padding:1rem">
+                <div class="fw-700 text-sm mb-2">🔒 Security Settings</div>
+                <div style="display:flex;flex-direction:column;gap:0.75rem">
+                  <label class="form-check"><input type="checkbox" checked> Enable Fullscreen Mode (Kiosk)</label>
+                  <label class="form-check"><input type="checkbox" checked> Enable Tab-Switch Monitoring</label>
+                  <label class="form-check"><input type="checkbox" checked> Auto-Submit on Timeout</label>
+                  <label class="form-check"><input type="checkbox"> Disable Copy-Paste</label>
+                  <label class="form-check"><input type="checkbox"> Randomize Program Order</label>
+                  <label class="form-check"><input type="checkbox" checked> Send Faculty Alerts on Violations</label>
+                </div>
+              </div>
+            </div>
+            <div style="display:flex;gap:0.75rem">
+              <button class="btn btn-secondary" style="flex:1" onclick="showToast('Draft saved','info')">💾 Save Draft</button>
+              <button class="btn btn-primary" style="flex:1" onclick="showToast('Exam published successfully!','success')">🚀 Publish Exam</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div class="card-title">📋 All Examinations</div></div>
+          <div class="table-wrap">
+            <table class="table">
+              <thead><tr><th>Exam Name</th><th>Lab</th><th>Date</th><th>Duration</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td>Internal Lab Exam 1</td><td>C Lab</td><td>Jan 15</td><td>2 hrs</td><td><span class="badge badge-success">Completed</span></td></tr>
+                <tr><td>Internal Lab Exam 2</td><td>DS Lab</td><td>Feb 20</td><td>2 hrs</td><td><span class="badge badge-brand">Upcoming</span></td></tr>
+                <tr><td>Model Exam</td><td>C Lab</td><td>Mar 5</td><td>3 hrs</td><td><span class="badge badge-gray">Draft</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─────────────────────────────────────
+         SECTION: STUDENT PERFORMANCE
+    ───────────────────────────────────── -->
+    <div id="sec-student-perf" class="page-content hidden">
+      <div class="page-header">
+        <h1>Student Performance Analytics</h1>
+        <p>Comprehensive performance data across all labs and assessments</p>
+      </div>
+
+      <div class="stat-grid mb-4">
+        <div class="stat-card"><div class="stat-card-top"><div class="stat-icon si-blue">📊</div></div><div class="stat-value">78%</div><div class="stat-label">Class Average</div><div class="stat-card-bar bar-blue"></div></div>
+        <div class="stat-card"><div class="stat-card-top"><div class="stat-icon si-green">🏆</div></div><div class="stat-value">93%</div><div class="stat-label">Top Score</div><div class="stat-card-bar bar-green"></div></div>
+        <div class="stat-card"><div class="stat-card-top"><div class="stat-icon si-red">📉</div></div><div class="stat-value">12</div><div class="stat-label">Need Attention</div><div class="stat-card-bar bar-red"></div></div>
+        <div class="stat-card"><div class="stat-card-top"><div class="stat-icon si-yellow">🧠</div></div><div class="stat-value">247</div><div class="stat-label">AI Assists Used</div><div class="stat-card-bar bar-yellow"></div></div>
+      </div>
+
+      <div class="grid grid-2 gap-3 mb-3">
+        <div class="card">
+          <div class="card-header"><div class="card-title">📊 Average Marks per Write-Up</div></div>
+          <div class="card-body"><div class="bar-chart" id="perf-chart"></div><div class="bar-chart-labels" id="perf-chart-labels"></div></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">🐛 Most Common Errors</div></div>
+          <div class="card-body" style="padding:0">
+            <div id="error-dist-list"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-2 gap-3">
+        <div class="card">
+          <div class="card-header"><div class="card-title">🏆 Top Performers</div></div>
+          <div class="table-wrap">
+            <table class="table">
+              <thead><tr><th>Rank</th><th>Student</th><th>Roll No</th><th>Avg Score</th><th>Trend</th></tr></thead>
+              <tbody>
+                <tr><td>🥇</td><td>Ravi Kumar</td><td>CS001</td><td><strong class="text-success">93%</strong></td><td><span class="stat-trend trend-up">↑ 4%</span></td></tr>
+                <tr><td>🥈</td><td>Priya Sharma</td><td>CS002</td><td><strong class="text-success">89%</strong></td><td><span class="stat-trend trend-up">↑ 2%</span></td></tr>
+                <tr><td>🥉</td><td>Anjali Joshi</td><td>CS005</td><td><strong class="text-success">85%</strong></td><td><span class="stat-trend trend-up">↑ 1%</span></td></tr>
+                <tr><td>4</td><td>Meena R</td><td>CS004</td><td><strong>74%</strong></td><td><span class="stat-trend trend-neutral">→ 0%</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">⚠️ Students Requiring Attention</div></div>
+          <div class="table-wrap">
+            <table class="table">
+              <thead><tr><th>Student</th><th>Avg</th><th>Missed</th><th>Issue</th></tr></thead>
+              <tbody>
+                <tr><td>Arjun Das</td><td><strong class="text-warning">62%</strong></td><td>2</td><td><span class="badge badge-danger">Low Score</span></td></tr>
+                <tr><td>Kiran B</td><td><strong class="text-warning">55%</strong></td><td>3</td><td><span class="badge badge-warning">Absent</span></td></tr>
+                <tr><td>Suresh M</td><td><strong class="text-danger">48%</strong></td><td>1</td><td><span class="badge badge-danger">Critical</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─────────────────────────────────────
+         SECTION: LIVE MONITORING
+    ───────────────────────────────────── -->
+    <div id="sec-monitoring" class="page-content hidden">
+      <div class="flex-between mb-4">
+        <div class="page-header" style="margin:0">
+          <h1>Live Assessment Monitoring</h1>
+          <p>Real-time monitoring for Write-Up 4 — Sorting Algorithms</p>
+        </div>
+        <div style="display:flex;align-items:center;gap:1rem">
+          <div style="display:flex;align-items:center;gap:0.5rem;padding:0.6rem 1rem;background:var(--danger-bg);border:1px solid rgba(220,38,38,0.2);border-radius:var(--radius)">
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--danger);animation:pulse-warn 0.8s ease infinite"></div>
+            <span style="font-size:0.8rem;font-weight:700;color:var(--danger)">LIVE</span>
+          </div>
+          <div style="font-size:0.85rem;font-weight:600;color:var(--text-2)">⏱ Time Remaining: <span id="exam-countdown" style="color:var(--danger)">14:20</span></div>
+        </div>
+      </div>
+
+      <div class="stat-grid mb-4">
+        <div class="stat-card"><div class="stat-card-top"><div class="stat-icon si-green">🟢</div></div><div class="stat-value text-success">42</div><div class="stat-label">Online Now</div><div class="stat-card-bar bar-green"></div></div>
+        <div class="stat-card"><div class="stat-card-top"><div class="stat-icon si-blue">✅</div></div><div class="stat-value">15</div><div class="stat-label">Submitted</div><div class="stat-card-bar bar-blue"></div></div>
+        <div class="stat-card"><div class="stat-card-top"><div class="stat-icon si-yellow">⌨️</div></div><div class="stat-value">25</div><div class="stat-label">Coding Now</div><div class="stat-card-bar bar-yellow"></div></div>
+        <div class="stat-card"><div class="stat-card-top"><div class="stat-icon si-red">🚨</div></div><div class="stat-value text-danger">2</div><div class="stat-label">Violations</div><div class="stat-card-bar bar-red"></div></div>
+      </div>
+
+      <div class="monitor-grid" id="monitor-grid"></div>
+    </div>
+
+    <!-- ─────────────────────────────────────
+         SECTION: REPORTS
+    ───────────────────────────────────── -->
+    <div id="sec-reports" class="page-content hidden">
+      <div class="page-toolbar">
+        <div class="page-header" style="margin:0">
+          <h1>Assessment Reports</h1>
+          <p>Detailed grade sheets and performance summaries</p>
+        </div>
+        <div style="display:flex;gap:0.75rem">
+          <select class="form-control" style="width:auto">
+            <option>Write-Up 3 — Matrix Addition</option>
+            <option>Write-Up 4 — Sorting</option>
+          </select>
+          <button class="btn btn-primary btn-sm" onclick="showToast('Exporting PDF report...','info')">📥 Export PDF</button>
+        </div>
+      </div>
+
+      <div class="stat-grid mb-4">
+        <div class="stat-card"><div class="stat-card-top"><div class="stat-icon si-blue">📊</div></div><div class="stat-value">8.2</div><div class="stat-label">Class Average</div><div class="stat-card-bar bar-blue"></div></div>
+        <div class="stat-card"><div class="stat-card-top"><div class="stat-icon si-green">🏆</div></div><div class="stat-value">10/10</div><div class="stat-label">Highest</div><div class="stat-card-bar bar-green"></div></div>
+        <div class="stat-card"><div class="stat-card-top"><div class="stat-icon si-red">📉</div></div><div class="stat-value">3/10</div><div class="stat-label">Lowest</div><div class="stat-card-bar bar-red"></div></div>
+        <div class="stat-card"><div class="stat-card-top"><div class="stat-icon si-yellow">📋</div></div><div class="stat-value">38</div><div class="stat-label">Total Submissions</div><div class="stat-card-bar bar-yellow"></div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🏅 Grade Sheet — Write-Up 3: Matrix Addition</div>
+          <button class="btn btn-secondary btn-sm" onclick="showToast('Downloading CSV...','info')">📥 CSV</button>
+        </div>
+        <div class="table-wrap">
+          <table class="table">
+            <thead><tr><th>Student Name</th><th>Roll No</th><th>Compilation (3)</th><th>Output (4)</th><th>Logic (3)</th><th>Total (10)</th><th>Grade</th><th>AI Assists</th></tr></thead>
+            <tbody>
+              <tr><td>Ravi Kumar</td><td>CS001</td><td><span class="badge badge-success">3/3</span></td><td><span class="badge badge-success">4/4</span></td><td><span class="badge badge-success">3/3</span></td><td><strong class="text-success">10/10</strong></td><td><span class="badge badge-success">A+</span></td><td>0</td></tr>
+              <tr><td>Priya Sharma</td><td>CS002</td><td><span class="badge badge-success">3/3</span></td><td><span class="badge badge-success">3/4</span></td><td><span class="badge badge-success">3/3</span></td><td><strong class="text-success">9/10</strong></td><td><span class="badge badge-success">A</span></td><td>1</td></tr>
+              <tr><td>Anjali Joshi</td><td>CS005</td><td><span class="badge badge-success">3/3</span></td><td><span class="badge badge-success">4/4</span></td><td><span class="badge badge-warning">2/3</span></td><td><strong>9/10</strong></td><td><span class="badge badge-success">A</span></td><td>0</td></tr>
+              <tr><td>Meena R</td><td>CS004</td><td><span class="badge badge-success">3/3</span></td><td><span class="badge badge-warning">2/4</span></td><td><span class="badge badge-warning">2/3</span></td><td><strong class="text-warning">7/10</strong></td><td><span class="badge badge-info">B</span></td><td>2</td></tr>
+              <tr><td>Arjun Das</td><td>CS003</td><td><span class="badge badge-warning">2/3</span></td><td><span class="badge badge-warning">2/4</span></td><td><span class="badge badge-warning">1/3</span></td><td><strong class="text-warning">5/10</strong></td><td><span class="badge badge-warning">C</span></td><td>5</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─────────────────────────────────────
+         SECTION: NOTIFICATIONS
+    ───────────────────────────────────── -->
+    <div id="sec-notifications" class="page-content hidden">
+      <div class="flex-between mb-4">
+        <div class="page-header" style="margin:0"><h1>Notifications</h1><p>All activity alerts and system messages</p></div>
+        <button class="btn btn-secondary btn-sm" onclick="showToast('All notifications marked as read','success')">✓ Mark All Read</button>
+      </div>
+
+      <div class="card">
+        <div class="tabs" style="padding:0 1rem;border-bottom-color:var(--border)">
+          <button class="tab-btn active" onclick="switchTab(this,'notif-all')">All (5)</button>
+          <button class="tab-btn" onclick="switchTab(this,'notif-alerts')">Alerts (2)</button>
+          <button class="tab-btn" onclick="switchTab(this,'notif-sub')">Submissions (3)</button>
+        </div>
+
+        <div id="notif-all" class="tab-panel active notif-list">
+          <div class="notif-item unread"><div class="notif-icon si-red" style="border-radius:var(--radius)">🚨</div><div class="notif-content"><div class="notif-title">Arjun Das — Tab Switch (3x) during Write-Up 4</div><div class="notif-desc">Switched browser tabs 3 times. Write-Up 4 · C Programming Lab · Section A</div><div class="notif-time">Today, 10:32 AM</div></div><div class="notif-unread-dot"></div></div>
+          <div class="notif-item unread"><div class="notif-icon si-yellow" style="border-radius:var(--radius)">⚠️</div><div class="notif-content"><div class="notif-title">Meena R — Left Exam Window (8 sec)</div><div class="notif-desc">Exam window was unfocused for 8 seconds</div><div class="notif-time">Today, 10:29 AM</div></div><div class="notif-unread-dot"></div></div>
+          <div class="notif-item"><div class="notif-icon si-green" style="border-radius:var(--radius)">✅</div><div class="notif-content"><div class="notif-title">Ravi Kumar submitted Write-Up 4</div><div class="notif-desc">Score: 9/10 · Auto-evaluation complete · C Programming Lab</div><div class="notif-time">Today, 10:23 AM</div></div></div>
+          <div class="notif-item"><div class="notif-icon si-blue" style="border-radius:var(--radius)">📝</div><div class="notif-content"><div class="notif-title">Priya Sharma submitted Write-Up 4</div><div class="notif-desc">Score: 8/10 · Auto-evaluation complete · DS Lab</div><div class="notif-time">Today, 10:18 AM</div></div></div>
+          <div class="notif-item"><div class="notif-icon si-purple" style="border-radius:var(--radius)">🏁</div><div class="notif-content"><div class="notif-title">Write-Up 3 — Assessment Completed</div><div class="notif-desc">38/42 students submitted. Matrix Addition · Average: 8.2/10</div><div class="notif-time">Yesterday, 3:00 PM</div></div></div>
+        </div>
+
+        <div id="notif-alerts" class="tab-panel notif-list">
+          <div class="notif-item unread"><div class="notif-icon si-red" style="border-radius:var(--radius)">🚨</div><div class="notif-content"><div class="notif-title">Arjun Das — Tab Switch (3x)</div><div class="notif-desc">Switched tabs during Write-Up 4</div><div class="notif-time">Today, 10:32 AM</div></div><div class="notif-unread-dot"></div></div>
+          <div class="notif-item unread"><div class="notif-icon si-yellow" style="border-radius:var(--radius)">⚠️</div><div class="notif-content"><div class="notif-title">Meena R — Window Unfocused</div><div class="notif-desc">8 seconds unfocused during exam</div><div class="notif-time">Today, 10:29 AM</div></div><div class="notif-unread-dot"></div></div>
+        </div>
+
+        <div id="notif-sub" class="tab-panel notif-list">
+          <div class="notif-item"><div class="notif-icon si-green" style="border-radius:var(--radius)">✅</div><div class="notif-content"><div class="notif-title">Ravi Kumar — Write-Up 4 (9/10)</div><div class="notif-time">Today, 10:23 AM</div></div></div>
+          <div class="notif-item"><div class="notif-icon si-blue" style="border-radius:var(--radius)">📝</div><div class="notif-content"><div class="notif-title">Priya Sharma — Write-Up 4 (8/10)</div><div class="notif-time">Today, 10:18 AM</div></div></div>
+          <div class="notif-item"><div class="notif-icon si-purple" style="border-radius:var(--radius)">🏁</div><div class="notif-content"><div class="notif-title">Write-Up 3 — Fully Graded</div><div class="notif-time">Yesterday</div></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end main-area -->
+</div><!-- end app-layout -->
+
+<!-- ═══════ MODALS ═══════ -->
+
+<!-- Create Lab Modal -->
+<div class="modal-overlay" id="modal-create-lab">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>🧪 Create New Laboratory</h2>
+      <button class="modal-close" onclick="closeModal('modal-create-lab')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Lab Name</label><input class="form-control" placeholder="e.g. C Programming Lab — Section A"></div>
+      <div class="form-group"><label class="form-label">Subject Name</label><input class="form-control" placeholder="e.g. C Programming"></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Semester</label>
+          <select class="form-control"><option>3rd Semester</option><option>4th Semester</option><option>5th Semester</option></select>
+        </div>
+        <div class="form-group"><label class="form-label">Section</label>
+          <select class="form-control"><option>Section A</option><option>Section B</option><option>Section C</option></select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Academic Year</label><input class="form-control" value="2024–2025"></div>
+        <div class="form-group"><label class="form-label">Max Students</label><input type="number" class="form-control" value="60"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Description</label><textarea class="form-control" rows="3" placeholder="Brief description of the laboratory..."></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-create-lab')">Cancel</button>
+      <button class="btn btn-primary" onclick="createLab()">Create Laboratory</button>
+    </div>
+  </div>
+</div>
+
+<!-- Write-Up Modal -->
+<div class="modal-overlay" id="modal-writeup">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>📝 Create Write-Up</h2>
+      <button class="modal-close" onclick="closeModal('modal-writeup')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Write-Up Title</label><input class="form-control" placeholder="e.g. Sorting Algorithms"></div>
+      <div class="form-group"><label class="form-label">Select Lab</label>
+        <select class="form-control"><option>C Programming Lab — Section A</option><option>DS Lab</option></select>
+      </div>
+      <div class="form-group"><label class="form-label">Select Program</label>
+        <select class="form-control"><option>Program 1 — Factorial</option><option>Program 2 — Fibonacci</option><option>Program 3 — Matrix Addition</option><option>Program 4 — Sorting</option></select>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Duration (min)</label><input type="number" class="form-control" value="20"></div>
+        <div class="form-group"><label class="form-label">Total Marks</label><input type="number" class="form-control" value="10"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Start Date & Time</label><input type="datetime-local" class="form-control"></div>
+        <div class="form-group"><label class="form-label">End Date & Time</label><input type="datetime-local" class="form-control"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-writeup');showToast('Draft saved','info')">💾 Save</button>
+      <button class="btn btn-primary" onclick="closeModal('modal-writeup');showToast('Write-Up published!','success')">🚀 Publish</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-root"></div>
+<script src="main.js"></script>
+</body>
+</html>

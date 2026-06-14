@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — AI-Powered Programming Lab Assistant</title>
+  <link rel="stylesheet" href="theme.css">
+  <style>
+    body { background: var(--bg); }
+    .role-cards { display: grid; grid-template-columns: repeat(3,1fr); gap: 0.5rem; margin-bottom: 1.25rem; }
+    .role-card {
+      border: 1.5px solid var(--border); border-radius: var(--radius);
+      padding: 0.75rem 0.5rem; text-align: center; cursor: pointer;
+      transition: all var(--transition); background: var(--surface);
+    }
+    .role-card:hover { border-color: var(--brand); background: var(--brand-light); }
+    .role-card.selected { border-color: var(--brand); background: var(--brand-light); box-shadow: 0 0 0 3px rgba(37,99,235,0.15); }
+    .role-card-icon { font-size: 1.5rem; margin-bottom: 0.3rem; }
+    .role-card-label { font-size: 0.72rem; font-weight: 700; color: var(--text-2); }
+    .role-card.selected .role-card-label { color: var(--brand); }
+    .login-divider { text-align: center; color: var(--text-4); font-size: 0.75rem; margin: 1.5rem 0; position: relative; }
+    .login-divider::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: var(--border); }
+    .login-divider span { background: var(--bg); padding: 0 0.75rem; position: relative; }
+    .forgot-link { display: block; text-align: right; font-size: 0.78rem; color: var(--brand); margin-top: 0.25rem; }
+    .forgot-link:hover { text-decoration: underline; }
+    .password-wrap { position: relative; }
+    .password-wrap .toggle-pw {
+      position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%);
+      background: none; border: none; color: var(--text-4); cursor: pointer; font-size: 0.85rem; padding: 0;
+    }
+    .security-badge {
+      display: flex; align-items: center; gap: 0.5rem;
+      background: var(--success-bg); border: 1px solid rgba(22,163,74,0.2);
+      border-radius: var(--radius); padding: 0.6rem 0.875rem; font-size: 0.78rem; color: var(--success);
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+<div class="login-page">
+  <!-- Left Branding Panel -->
+  <div class="login-left">
+    <div class="login-brand">
+      <div class="login-logo">🧪</div>
+      <h1>AI-Powered Programming<br>Lab Assistant</h1>
+      <p>An intelligent platform for programming laboratories — AI error analysis, automated assessment, performance tracking, and secure examinations.</p>
+    </div>
+    <div class="login-features">
+      <div class="login-feature">
+        <div class="login-feature-icon">🤖</div>
+        <div class="login-feature-text">AI converts GCC errors into beginner-friendly explanations</div>
+      </div>
+      <div class="login-feature">
+        <div class="login-feature-icon">⚡</div>
+        <div class="login-feature-text">Automated assessment with logic-based evaluation</div>
+      </div>
+      <div class="login-feature">
+        <div class="login-feature-icon">🔒</div>
+        <div class="login-feature-text">Secure exam mode with real-time activity monitoring</div>
+      </div>
+      <div class="login-feature">
+        <div class="login-feature-icon">📊</div>
+        <div class="login-feature-text">Comprehensive analytics for students and faculty</div>
+      </div>
+    </div>
+    <div style="margin-top:3rem;text-align:center;color:rgba(255,255,255,0.3);font-size:0.72rem">
+      © 2025 AI Programming Lab Assistant · v2.0
+    </div>
+  </div>
+
+  <!-- Right Login Form -->
+  <div class="login-right">
+    <div class="login-form-wrap">
+      <!-- Header -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem">
+        <div>
+          <h2>Welcome back</h2>
+          <p style="color:var(--text-3);font-size:0.875rem;margin-top:0.25rem">Sign in to your account to continue</p>
+        </div>
+        <div class="theme-toggle" id="loginThemeToggle" onclick="toggleTheme(this)" title="Toggle dark mode"></div>
+      </div>
+
+      <!-- Role Selection -->
+      <div style="margin-bottom:1.25rem">
+        <div class="form-label">Select Role</div>
+        <div class="role-cards">
+          <div class="role-card" id="role-admin" onclick="selectRole('admin')">
+            <div class="role-card-icon">🛡️</div>
+            <div class="role-card-label">Admin</div>
+          </div>
+          <div class="role-card selected" id="role-faculty" onclick="selectRole('faculty')">
+            <div class="role-card-icon">👨‍🏫</div>
+            <div class="role-card-label">Faculty</div>
+          </div>
+          <div class="role-card" id="role-student" onclick="selectRole('student')">
+            <div class="role-card-icon">🎓</div>
+            <div class="role-card-label">Student</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <div class="form-control-icon">
+          <span class="icon">✉️</span>
+          <input type="email" class="form-control" id="email-field" placeholder="Enter your email" value="faculty@college.edu">
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <div class="password-wrap">
+          <input type="password" class="form-control" id="pw-field" placeholder="Enter your password" value="password123" style="padding-right:2.5rem">
+          <button class="toggle-pw" onclick="togglePw()" id="pw-toggle">👁</button>
+        </div>
+        <a href="#" class="forgot-link">Forgot your password?</a>
+      </div>
+
+      <!-- Remember me -->
+      <div class="login-extras">
+        <label class="form-check">
+          <input type="checkbox" checked>
+          <span>Remember me for 30 days</span>
+        </label>
+      </div>
+
+      <!-- Login Button -->
+      <button class="btn btn-primary btn-xl btn-full" id="login-btn" onclick="handleLogin()">
+        <span id="login-btn-text">Sign In →</span>
+      </button>
+
+      <div class="security-badge">
+        <span>🔐</span>
+        <span>Protected with 256-bit SSL encryption. Your data is safe.</span>
+      </div>
+
+      <div class="login-divider"><span>Demo Credentials</span></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.5rem">
+        <button class="btn btn-secondary btn-sm" onclick="fillDemo('admin')">🛡 Admin</button>
+        <button class="btn btn-secondary btn-sm" onclick="fillDemo('faculty')">👨‍🏫 Faculty</button>
+        <button class="btn btn-secondary btn-sm" onclick="fillDemo('student')">🎓 Student</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast-root"></div>
+
+<script src="main.js"></script>
+<script>
+  let selectedRole = 'faculty';
+
+  function selectRole(role) {
+    selectedRole = role;
+    document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
+    document.getElementById('role-' + role).classList.add('selected');
+    const emails = { admin: 'admin@college.edu', faculty: 'faculty@college.edu', student: 'student@college.edu' };
+    document.getElementById('email-field').value = emails[role];
+  }
+
+  function fillDemo(role) {
+    selectRole(role);
+    document.getElementById('pw-field').value = 'password123';
+    showToast('Demo credentials filled — click Sign In', 'info');
+  }
+
+  function togglePw() {
+    const f = document.getElementById('pw-field');
+    const b = document.getElementById('pw-toggle');
+    if (f.type === 'password') { f.type = 'text'; b.textContent = '🙈'; }
+    else { f.type = 'password'; b.textContent = '👁'; }
+  }
+
+  function handleLogin() {
+    const btn = document.getElementById('login-btn');
+    const txt = document.getElementById('login-btn-text');
+    btn.disabled = true;
+    txt.innerHTML = '<span class="spin" style="display:inline-block">⟳</span>&nbsp;Signing in...';
+    setTimeout(() => {
+      const redirects = {
+        admin: 'admin-dashboard.html',
+        faculty: 'faculty-dashboard.html',
+        student: 'student-dashboard.html'
+      };
+      showToast('Login successful! Redirecting...', 'success');
+      setTimeout(() => { window.location.href = redirects[selectedRole]; }, 800);
+    }, 1200);
+  }
+
+  function toggleTheme(el) {
+    el.classList.toggle('on');
+    const isDark = el.classList.contains('on');
+    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    localStorage.setItem('labmind-theme', isDark ? 'dark' : 'light');
+  }
+
+  // Apply saved theme
+  const saved = localStorage.getItem('labmind-theme');
+  if (saved === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.getElementById('loginThemeToggle')?.classList.add('on');
+  }
+</script>
+</body>
+</html>
