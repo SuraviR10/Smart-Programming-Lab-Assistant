@@ -124,9 +124,25 @@
          SECTION: DASHBOARD
     ───────────────────────────────────── -->
     <div id="sec-dashboard" class="page-content">
-      <div class="page-header">
-        <h1>Welcome back, Ravi 👋</h1>
-        <p>You have 1 pending write-up · Thursday, 16 January 2025</p>
+      <div class="dash-header-gamified">
+        <div>
+          <h1 class="mb-1">Welcome back, Ravi 👋</h1>
+          <p class="text-muted">Let's make today a great coding day. You're on a roll!</p>
+        </div>
+        <div class="gamified-stats">
+          <div class="gamified-stat-item">
+            <div class="gamified-stat-icon">🔥</div>
+            <div><div class="gamified-stat-val">5 Day</div><div class="gamified-stat-label">Streak</div></div>
+          </div>
+          <div class="gamified-stat-item">
+            <div class="gamified-stat-icon">✨</div>
+            <div><div class="gamified-stat-val">1,250</div><div class="gamified-stat-label">XP</div></div>
+          </div>
+          <div class="gamified-stat-item">
+            <div class="gamified-stat-icon">🏆</div>
+            <div><div class="gamified-stat-val">Level 4</div><div class="gamified-stat-label">Pro Coder</div></div>
+          </div>
+        </div>
       </div>
 
       <div class="stat-grid">
@@ -208,28 +224,7 @@
           <button class="btn btn-secondary btn-sm" onclick="showSection('labs')">All Labs</button>
         </div>
         <div class="card-body">
-          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.25rem">
-            <div>
-              <div class="flex-between mb-2"><span class="fw-600 text-sm">C Programming Lab</span><span class="text-sm text-muted">8/10</span></div>
-              <div class="progress-bar"><div class="progress-fill" style="width:80%"></div></div>
-              <div class="text-xs text-muted mt-1">80% Complete</div>
-            </div>
-            <div>
-              <div class="flex-between mb-2"><span class="fw-600 text-sm">Data Structures Lab</span><span class="text-sm text-muted">7/12</span></div>
-              <div class="progress-bar"><div class="progress-fill green" style="width:58%"></div></div>
-              <div class="text-xs text-muted mt-1">58% Complete</div>
-            </div>
-            <div>
-              <div class="flex-between mb-2"><span class="fw-600 text-sm">ML Lab</span><span class="text-sm text-muted">2/8</span></div>
-              <div class="progress-bar"><div class="progress-fill yellow" style="width:25%"></div></div>
-              <div class="text-xs text-muted mt-1">25% Complete</div>
-            </div>
-            <div>
-              <div class="flex-between mb-2"><span class="fw-600 text-sm">Full Stack Dev Lab</span><span class="text-sm text-muted">7/15</span></div>
-              <div class="progress-bar"><div class="progress-fill gradient" style="width:47%"></div></div>
-              <div class="text-xs text-muted mt-1">47% Complete</div>
-            </div>
-          </div>
+          <div class="progress-rings-grid" id="progress-rings-container"></div>
         </div>
       </div>
     </div>

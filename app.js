@@ -1,70 +1,3 @@
-// ── Particles Background ──
-(function initParticles() {
-  const canvas = document.getElementById('particles-bg');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  let particles = [];
-
-  const resize = () => {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-  };
-  resize();
-  window.addEventListener('resize', resize);
-
-  class Particle {
-    constructor() { this.reset(); }
-    reset() {
-      this.x = Math.random() * canvas.width;
-      this.y = Math.random() * canvas.height;
-      this.r = Math.random() * 1.5 + 0.3;
-      this.vx = (Math.random() - 0.5) * 0.3;
-      this.vy = (Math.random() - 0.5) * 0.3;
-      this.alpha = Math.random() * 0.5 + 0.1;
-      const colors = ['108,99,255', '0,212,170', '255,101,132', '79,195,247'];
-      this.color = colors[Math.floor(Math.random() * colors.length)];
-    }
-    update() {
-      this.x += this.vx; this.y += this.vy;
-      if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) this.reset();
-    }
-    draw() {
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(${this.color},${this.alpha})`;
-      ctx.fill();
-    }
-  }
-
-  for (let i = 0; i < 120; i++) particles.push(new Particle());
-
-  function drawLines() {
-    for (let i = 0; i < particles.length; i++) {
-      for (let j = i + 1; j < particles.length; j++) {
-        const dx = particles[i].x - particles[j].x;
-        const dy = particles[i].y - particles[j].y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 100) {
-          ctx.beginPath();
-          ctx.moveTo(particles[i].x, particles[i].y);
-          ctx.lineTo(particles[j].x, particles[j].y);
-          ctx.strokeStyle = `rgba(108,99,255,${0.06 * (1 - dist / 100)})`;
-          ctx.lineWidth = 0.5;
-          ctx.stroke();
-        }
-      }
-    }
-  }
-
-  function animate() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    particles.forEach(p => { p.update(); p.draw(); });
-    drawLines();
-    requestAnimationFrame(animate);
-  }
-  animate();
-})();
-
 // ── Navbar scroll effect ──
 window.addEventListener('scroll', () => {
   const nav = document.getElementById('navbar');
@@ -190,23 +123,31 @@ function runCode() {
   const aiContent = document.getElementById('ai-content');
   if (!outputEl) return;
 
-  outputEl.innerHTML = '<span style="color:#4fc3f7">Compiling with GCC...</span>';
+  // Use textContent for the initial status message — no injection risk
+  outputEl.textContent = 'Compiling with GCC...';
+  outputEl.style.color = '#4fc3f7';
   if (aiPanel) aiPanel.style.display = 'none';
 
   setTimeout(() => {
     runCount++;
     if (runCount % 2 === 1) {
-      // Show error
-      outputEl.innerHTML = `<div class="output-error">${errorScenarios[0].errorMsg}</div>`;
+      // Error path — errorMsg and aiTitle/aiMsg are static strings defined in errorScenarios
+      const errorDiv = document.createElement('div');
+      errorDiv.className = 'output-error';
+      errorDiv.textContent = errorScenarios[0].errorMsg;
+      outputEl.textContent = '';
+      outputEl.style.color = '';
+      outputEl.appendChild(errorDiv);
       if (aiPanel && aiContent) {
+        // aiMsg contains trusted static HTML markup (no user input) — safe to use directly
         aiContent.innerHTML = `<div style="margin-bottom:0.5rem;font-weight:600;color:var(--danger)">${errorScenarios[0].aiTitle}</div>${errorScenarios[0].aiMsg}`;
         aiPanel.style.display = 'block';
         aiPanel.style.animation = 'fade-in 0.5s ease';
       }
       showToast('Compilation failed — AI analysis ready below', 'error');
     } else {
-      // Success
-      outputEl.innerHTML = `<div class="output-success">✅ Compilation successful<br><br>Sorted: 12 22 25 34 64 </div>`;
+      // Success path — fully static content
+      outputEl.innerHTML = '<div class="output-success">✅ Compilation successful<br><br>Sorted: 12 22 25 34 64 </div>';
       if (aiPanel) aiPanel.style.display = 'none';
       showToast('Program compiled and executed successfully!', 'success');
     }
@@ -251,7 +192,12 @@ function showToast(message, type = 'info') {
   const toast = document.createElement('div');
   const icons = { success: '✅', error: '❌', info: '💡' };
   toast.className = `toast toast-${type === 'error' ? 'error' : type === 'success' ? 'success' : 'info'}`;
-  toast.innerHTML = `<span>${icons[type] || '💡'}</span><span>${message}</span>`;
+  // Use textContent for message to prevent XSS
+  const iconSpan = document.createElement('span');
+  iconSpan.textContent = icons[type] || '💡';
+  const msgSpan = document.createElement('span');
+  msgSpan.textContent = message;
+  toast.append(iconSpan, msgSpan);
   container.appendChild(toast);
 
   setTimeout(() => {

@@ -1,4 +1,17 @@
 // ══════════════════════════════════════════
+//  SANITIZE — escapes HTML to prevent XSS/injection
+//  Always call s() on any string before inserting into innerHTML
+// ══════════════════════════════════════════
+function s(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;');
+}
+
+// ══════════════════════════════════════════
 //  THEME
 // ══════════════════════════════════════════
 function toggleTheme(el) {
@@ -76,6 +89,7 @@ function initSection(name) {
       buildBarChart('dash-chart', 'dash-chart-labels', [6.8,7.2,7.9,8.1,8.4,7.6,8.7], ['WU1','WU2','WU3','WU4','WU5','WU6','WU7']);
       buildTopPerformers();
       buildScoreSparkline('recent-scores-chart');
+      buildProgressRings();
       break;
     case 'student-perf':
       buildBarChart('perf-chart','perf-chart-labels',[7.1,7.8,8.3,8.2,8.6,7.9,9.0],['WU1','WU2','WU3','WU4','WU5','WU6','WU7']);
@@ -152,6 +166,43 @@ function buildScoreSparkline(id) {
 }
 
 // ══════════════════════════════════════════
+//  PROGRESS RINGS (Student Dashboard)
+// ══════════════════════════════════════════
+const ringData = [
+  { name: 'C Programming Lab',   done: 8, total: 10, pct: 80, color: 'var(--brand)' },
+  { name: 'Data Structures Lab', done: 7, total: 12, pct: 58, color: 'var(--success)' },
+  { name: 'ML Lab',              done: 2, total: 8,  pct: 25, color: 'var(--warning)' },
+  { name: 'Full Stack Dev Lab',  done: 7, total: 15, pct: 47, color: '#7c3aed' },
+];
+function buildProgressRings() {
+  const cont = document.getElementById('progress-rings-container');
+  if (!cont || cont.innerHTML) return;
+  ringData.forEach((r, i) => {
+    const radius = 38;
+    const circumference = 2 * Math.PI * radius;
+    const offset = circumference - (r.pct / 100) * circumference;
+    cont.innerHTML += `<div class="progress-ring-item" style="animation-delay:${i*0.1}s">
+      <div class="progress-ring">
+        <svg width="90" height="90" viewBox="0 0 90 90">
+          <circle class="progress-ring-track" cx="45" cy="45" r="${radius}" />
+          <circle class="progress-ring-fill" cx="45" cy="45" r="${radius}"
+            stroke="${s(r.color)}"
+            stroke-dasharray="${circumference}"
+            stroke-dashoffset="${circumference}"
+            data-offset="${offset}"
+          />
+        </svg>
+        <div class="progress-ring-val">${s(r.pct)}<small>%</small></div>
+      </div>
+      <div class="progress-ring-info">
+        <div class="progress-ring-title">${s(r.name)}</div>
+        <div class="progress-ring-meta">${s(r.done)} / ${s(r.total)} tasks</div>
+      </div>
+    </div>`;
+  });
+  setTimeout(() => cont.querySelectorAll('.progress-ring-fill').forEach(c => c.style.strokeDashoffset = c.dataset.offset), 100);
+}
+// ══════════════════════════════════════════
 //  TOP PERFORMERS (Faculty Dashboard)
 // ══════════════════════════════════════════
 const performers = [
@@ -164,20 +215,21 @@ function buildTopPerformers() {
   const el = document.getElementById('top-performers-list');
   if (!el || el.innerHTML) return;
   performers.forEach(p => {
+    const scoreClass = p.pct >= 85 ? 'text-success' : '';
+    const fillClass  = p.pct >= 85 ? 'green' : p.pct >= 70 ? '' : 'yellow';
     el.innerHTML += `<div style="margin-bottom:0.875rem">
       <div class="flex-between mb-1">
         <div class="flex-center gap-2">
-          <div class="header-avatar" style="width:28px;height:28px;font-size:0.65rem;background:linear-gradient(135deg,${p.grad})">${p.init}</div>
-          <span class="fw-600 text-sm">${p.name}</span>
+          <div class="header-avatar" style="width:28px;height:28px;font-size:0.65rem;background:linear-gradient(135deg,${s(p.grad)})">${s(p.init)}</div>
+          <span class="fw-600 text-sm">${s(p.name)}</span>
         </div>
-        <span class="fw-700 text-sm ${p.pct >= 85 ? 'text-success' : ''}">${p.pct}%</span>
+        <span class="fw-700 text-sm ${s(scoreClass)}">${s(p.pct)}%</span>
       </div>
       <div class="progress-bar">
-        <div class="progress-fill ${p.pct>=85?'green':p.pct>=70?'':'yellow'}" style="width:0%;transition:width 1s ease" data-w="${p.pct}%"></div>
+        <div class="progress-fill ${s(fillClass)}" style="width:0%;transition:width 1s ease" data-w="${s(p.pct)}%"></div>
       </div>
     </div>`;
   });
-  // Animate
   setTimeout(() => el.querySelectorAll('.progress-fill').forEach(b => b.style.width = b.dataset.w), 100);
 }
 
@@ -197,10 +249,10 @@ function buildErrorDist() {
   if (!el || el.innerHTML) return;
   errorTypes.forEach(e => {
     el.innerHTML += `<div style="display:flex;align-items:center;gap:0.875rem;padding:0.7rem 1rem;border-bottom:1px solid var(--border)">
-      <div style="width:10px;height:10px;border-radius:50%;background:${e.color};flex-shrink:0"></div>
-      <span style="flex:1;font-size:0.82rem;font-weight:500">${e.name}</span>
-      <div style="width:80px"><div class="progress-bar"><div class="progress-fill" style="width:${e.pct}%;background:${e.color}"></div></div></div>
-      <span style="font-size:0.78rem;font-weight:700;color:${e.color};min-width:28px;text-align:right">${e.count}</span>
+      <div style="width:10px;height:10px;border-radius:50%;background:${s(e.color)};flex-shrink:0"></div>
+      <span style="flex:1;font-size:0.82rem;font-weight:500">${s(e.name)}</span>
+      <div style="width:80px"><div class="progress-bar"><div class="progress-fill" style="width:${s(e.pct)}%;background:${s(e.color)}"></div></div></div>
+      <span style="font-size:0.78rem;font-weight:700;color:${s(e.color)};min-width:28px;text-align:right">${s(e.count)}</span>
     </div>`;
   });
 }
@@ -223,24 +275,24 @@ function buildLabCards() {
       ? '<span class="badge badge-success">● Active</span>'
       : '<span class="badge badge-warning">● Upcoming</span>';
     grid.innerHTML += `<div class="lab-card-item">
-      <div class="lab-card-top" style="background:${l.color}"></div>
+      <div class="lab-card-top" style="background:${s(l.color)}"></div>
       <div class="lab-card-body">
-        <div class="lab-card-icon">${l.icon}</div>
-        <div class="lab-card-title">${l.name}</div>
-        <div class="lab-card-meta">${l.sub}</div>
+        <div class="lab-card-icon">${s(l.icon)}</div>
+        <div class="lab-card-title">${s(l.name)}</div>
+        <div class="lab-card-meta">${s(l.sub)}</div>
         <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.875rem">
           ${badge}
-          <span class="badge badge-brand">${l.writeups} Write-Ups</span>
+          <span class="badge badge-brand">${s(l.writeups)} Write-Ups</span>
         </div>
         <div class="flex-between mb-1">
           <span class="text-xs text-muted">Progress</span>
-          <span class="text-xs fw-600">${l.pct}%</span>
+          <span class="text-xs fw-600">${s(l.pct)}%</span>
         </div>
-        <div class="progress-bar"><div class="progress-fill" style="width:${l.pct}%;background:${l.color}"></div></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${s(l.pct)}%;background:${s(l.color)}"></div></div>
       </div>
       <div class="lab-card-footer">
-        <span class="text-sm text-muted">👥 ${l.students} students</span>
-        <button class="btn btn-primary btn-sm" onclick="showToast('Opening ${l.name}...','info')">Open Lab →</button>
+        <span class="text-sm text-muted">👥 ${s(l.students)} students</span>
+        <button class="btn btn-primary btn-sm" onclick="showToast('Opening lab...','info')">Open Lab →</button>
       </div>
     </div>`;
   });
@@ -263,20 +315,20 @@ function buildStudentLabCards() {
       ? '<span class="badge badge-success">Active</span>'
       : '<span class="badge badge-warning">Upcoming</span>';
     grid.innerHTML += `<div class="lab-card-item" style="cursor:pointer" onclick="showSection('editor')">
-      <div class="lab-card-top" style="background:${l.color}"></div>
+      <div class="lab-card-top" style="background:${s(l.color)}"></div>
       <div class="lab-card-body">
-        <div class="lab-card-icon">${l.icon}</div>
-        <div class="lab-card-title">${l.name}</div>
-        <div class="lab-card-meta">${l.faculty} · ${l.sem}</div>
+        <div class="lab-card-icon">${s(l.icon)}</div>
+        <div class="lab-card-title">${s(l.name)}</div>
+        <div class="lab-card-meta">${s(l.faculty)} · ${s(l.sem)}</div>
         <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.875rem">
           ${badge}
-          <span class="badge badge-brand">${l.total} Programs</span>
+          <span class="badge badge-brand">${s(l.total)} Programs</span>
         </div>
         <div class="flex-between mb-1">
-          <span class="text-xs text-muted">${l.done}/${l.total} completed</span>
-          <span class="text-xs fw-600">${l.pct}%</span>
+          <span class="text-xs text-muted">${s(l.done)}/${s(l.total)} completed</span>
+          <span class="text-xs fw-600">${s(l.pct)}%</span>
         </div>
-        <div class="progress-bar"><div class="progress-fill" style="width:${l.pct}%;background:${l.color}"></div></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${s(l.pct)}%;background:${s(l.color)}"></div></div>
       </div>
       <div class="lab-card-footer">
         <span class="text-sm text-muted">Practice Mode</span>
@@ -302,31 +354,35 @@ const monitorStudents = [
 function buildMonitorCards() {
   const grid = document.getElementById('monitor-grid');
   if (!grid || grid.innerHTML) return;
-  monitorStudents.forEach(s => {
-    const dotClass = `msd-${s.status}`;
-    const cardClass = s.status;
-    const progColor = s.status === 'red' ? 'var(--danger)' : s.status === 'yellow' ? 'var(--warning)' : 'var(--success)';
-    const warnBtn = (s.tabs > 0) ? `<button class="btn btn-danger btn-sm" onclick="showToast('Warning sent to ${s.name}','info');this.disabled=true;this.textContent='Sent'">⚠ Warn</button>` : '';
+  monitorStudents.forEach(st => {
+    const dotClass  = `msd-${s(st.status)}`;
+    const cardClass = s(st.status);
+    const progColor = st.status === 'red' ? 'var(--danger)' : st.status === 'yellow' ? 'var(--warning)' : 'var(--success)';
+    const tabColor  = st.tabs  > 0 ? 'var(--danger)'  : 'var(--text)';
+    const warnColor = st.warns > 0 ? 'var(--warning)' : 'var(--text)';
+    const warnBtn   = st.tabs > 0
+      ? `<button class="btn btn-danger btn-sm" onclick="showToast('Warning sent to ${s(st.name)}','info');this.disabled=true;this.textContent='Sent'">⚠ Warn</button>`
+      : '';
     grid.innerHTML += `<div class="monitor-card ${cardClass}">
       <div class="monitor-card-top">
         <div style="display:flex;align-items:center;gap:0.6rem">
-          <div class="monitor-avatar">${s.init}</div>
+          <div class="monitor-avatar">${s(st.init)}</div>
           <div>
-            <div class="monitor-name">${s.name}</div>
-            <div class="monitor-roll">${s.roll}</div>
+            <div class="monitor-name">${s(st.name)}</div>
+            <div class="monitor-roll">${s(st.roll)}</div>
           </div>
         </div>
         <div class="monitor-status-dot ${dotClass}"></div>
       </div>
-      <div style="font-size:0.78rem;font-weight:600;margin-bottom:0.6rem;color:${progColor}">${s.label}</div>
-      <div class="progress-bar" style="margin-bottom:0.75rem"><div class="progress-fill" style="width:${s.prog}%;background:${progColor}"></div></div>
+      <div style="font-size:0.78rem;font-weight:600;margin-bottom:0.6rem;color:${progColor}">${s(st.label)}</div>
+      <div class="progress-bar" style="margin-bottom:0.75rem"><div class="progress-fill" style="width:${s(st.prog)}%;background:${progColor}"></div></div>
       <div class="monitor-stats">
         <div class="monitor-stat-item">
-          <div class="monitor-stat-val" style="color:${s.tabs>0?'var(--danger)':'var(--text)'}">${s.tabs}</div>
+          <div class="monitor-stat-val" style="color:${tabColor}">${s(st.tabs)}</div>
           <div class="monitor-stat-label">Tab Switches</div>
         </div>
         <div class="monitor-stat-item">
-          <div class="monitor-stat-val" style="color:${s.warns>0?'var(--warning)':'var(--text)'}">${s.warns}</div>
+          <div class="monitor-stat-val" style="color:${warnColor}">${s(st.warns)}</div>
           <div class="monitor-stat-label">Warnings</div>
         </div>
       </div>
@@ -563,7 +619,12 @@ function showToast(msg, type = 'info') {
   const icons = { success:'✅', error:'❌', warning:'⚠️', info:'ℹ️' };
   const t = document.createElement('div');
   t.className = `toast ${type}`;
-  t.innerHTML = `<span class="toast-icon">${icons[type]||'ℹ️'}</span><span class="toast-msg">${msg}</span><span class="toast-close" onclick="this.parentElement.remove()">✕</span>`;
+  // Use textContent for msg to prevent XSS from any caller-supplied strings
+  const icon = document.createElement('span'); icon.className = 'toast-icon'; icon.textContent = icons[type] || 'ℹ️';
+  const msgEl = document.createElement('span'); msgEl.className = 'toast-msg'; msgEl.textContent = msg;
+  const closeEl = document.createElement('span'); closeEl.className = 'toast-close'; closeEl.textContent = '✕';
+  closeEl.addEventListener('click', () => t.remove());
+  t.append(icon, msgEl, closeEl);
   root.appendChild(t);
   setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateX(100%)'; t.style.transition = '0.3s ease'; setTimeout(() => t.remove(), 300); }, 3500);
 }
@@ -586,14 +647,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const name = firstSec.id.replace('sec-', '');
     setTimeout(() => initSection(name), 150);
   }
+  // Admin section init
+  setTimeout(() => {
+    buildBarChart('admin-chart','admin-chart-labels',[120,98,145,167,134,189,152],['Mon','Tue','Wed','Thu','Fri','Sat','Sun']);
+  }, 200);
   // Show mobile menu button if needed
   const menuBtn = document.getElementById('mob-menu');
   if (menuBtn && window.innerWidth <= 768) menuBtn.style.display = 'flex';
   window.addEventListener('resize', () => {
     if (menuBtn) menuBtn.style.display = window.innerWidth <= 768 ? 'flex' : 'none';
   });
-  // Admin section init
-  setTimeout(() => {
-    buildBarChart('admin-chart','admin-chart-labels',[120,98,145,167,134,189,152],['Mon','Tue','Wed','Thu','Fri','Sat','Sun']);
-  }, 200);
 });
