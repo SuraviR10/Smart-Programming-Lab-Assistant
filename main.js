@@ -214,22 +214,44 @@ const performers = [
 function buildTopPerformers() {
   const el = document.getElementById('top-performers-list');
   if (!el || el.innerHTML) return;
+
   performers.forEach(p => {
     const scoreClass = p.pct >= 85 ? 'text-success' : '';
     const fillClass  = p.pct >= 85 ? 'green' : p.pct >= 70 ? '' : 'yellow';
-    el.innerHTML += `<div style="margin-bottom:0.875rem">
-      <div class="flex-between mb-1">
-        <div class="flex-center gap-2">
-          <div class="header-avatar" style="width:28px;height:28px;font-size:0.65rem;background:linear-gradient(135deg,${s(p.grad)})">${s(p.init)}</div>
-          <span class="fw-600 text-sm">${s(p.name)}</span>
-        </div>
-        <span class="fw-700 text-sm ${s(scoreClass)}">${s(p.pct)}%</span>
-      </div>
-      <div class="progress-bar">
-        <div class="progress-fill ${s(fillClass)}" style="width:0%;transition:width 1s ease" data-w="${s(p.pct)}%"></div>
-      </div>
-    </div>`;
+
+    // Create elements programmatically to avoid innerHTML injection
+    const item = document.createElement('div');
+    item.style.marginBottom = '0.875rem';
+
+    const flexBetween = document.createElement('div');
+    flexBetween.className = 'flex-between mb-1';
+
+    const flexCenter = document.createElement('div');
+    flexCenter.className = 'flex-center gap-2';
+
+    const avatar = document.createElement('div');
+    avatar.className = 'header-avatar';
+    avatar.style.cssText = `width:28px;height:28px;font-size:0.65rem;background:linear-gradient(135deg,${p.grad})`;
+    avatar.textContent = p.init;
+
+    const name = document.createElement('span');
+    name.className = 'fw-600 text-sm';
+    name.textContent = p.name;
+
+    const score = document.createElement('span');
+    score.className = `fw-700 text-sm ${scoreClass}`;
+    score.textContent = `${p.pct}%`;
+
+    const progress = document.createElement('div');
+    progress.className = 'progress-bar';
+    progress.innerHTML = `<div class="progress-fill ${fillClass}" style="width:0%;transition:width 1s ease" data-w="${p.pct}%"></div>`;
+
+    flexCenter.append(avatar, name);
+    flexBetween.append(flexCenter, score);
+    item.append(flexBetween, progress);
+    el.appendChild(item);
   });
+
   setTimeout(() => el.querySelectorAll('.progress-fill').forEach(b => b.style.width = b.dataset.w), 100);
 }
 
@@ -457,69 +479,104 @@ const AI_ERRORS = [
   }
 ];
 
-let compileCount = 0;
-function compileCode() {
+async function compileCode() {
   const console_el = document.getElementById('console-body');
-  const aiPanel   = document.getElementById('ai-panel-body');
+  const aiPanel = document.getElementById('ai-panel-body');
+  const code = document.getElementById('code-textarea')?.value;
+  const programId = document.getElementById('editor-program-id')?.value; // Assume an input holds the current program ID
+
   if (!console_el) return;
+  if (!code) {
+    showToast('Code editor is empty.', 'warning');
+    return;
+  }
+
   console_el.innerHTML = `<div class="console-output cout-info">⟳ Compiling with GCC...</div>`;
   if (aiPanel) aiPanel.innerHTML = `<div style="text-align:center;padding:1.5rem;color:var(--text-4);font-size:0.85rem">⟳ Analyzing...</div>`;
 
-  compileCount++;
-  setTimeout(() => {
-    if (compileCount % 2 === 1) {
-      // Error run
-      const err = AI_ERRORS[0];
-      console_el.innerHTML = `
-        <div class="console-output cout-error">Compilation Failed</div>
-        <div class="console-output cout-error" style="margin-top:0.35rem">${err.raw}</div>
-        <div class="console-output" style="color:#585b70;margin-top:0.5rem">1 error generated.</div>`;
-      if (aiPanel) {
-        aiPanel.innerHTML = `
-          <div class="error-card">
-            <div class="error-card-title">🚫 ${err.title}</div>
-            <div class="error-code">${err.raw}</div>
-          </div>
-          <div class="ai-explanation">
-            <div class="ai-explanation-title">🤖 AI Explanation</div>
-            <div class="ai-explanation-text">${err.explain}</div>
-          </div>
-          <div class="ai-tip">💡 <div>${err.tip}</div></div>`;
+  try {
+    const token = localStorage.getItem('jwt_token'); // Assuming you store the JWT token
+    const response = await fetch('/api/compiler/compile', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ code: code, language: 'c', program_id: programId })
+    });
+
+    if (!response.ok) throw new Error(`Server error: ${response.statusText}`);
+
+    const result = await response.json();
+
+    if (result.compilation_success) {
+      console_el.innerHTML = `<div class="console-output cout-success">✅ Compilation successful</div>`;
+      if (result.compiler_output) {
+        console_el.innerHTML += `<div class="console-output cout-warn" style="margin-top:0.5rem">${s(result.compiler_output)}</div>`;
+      } else {
+        console_el.innerHTML += `<div class="console-output" style="color:#585b70;margin-top:0.35rem">No errors. No warnings.</div>`;
       }
-      showToast('Compilation failed — AI explanation ready', 'error');
-    } else {
-      // Success
-      console_el.innerHTML = `
-        <div class="console-output cout-success">✅ Compilation successful</div>
-        <div class="console-output" style="color:#585b70;margin-top:0.35rem">No errors. No warnings.</div>`;
-      if (aiPanel) {
-        aiPanel.innerHTML = `
-          <div style="text-align:center;padding:1.5rem">
-            <div style="font-size:2rem;margin-bottom:0.75rem">✅</div>
-            <div class="fw-700" style="color:var(--success)">Compilation Successful!</div>
-            <div class="text-sm text-muted" style="margin-top:0.35rem">Your code compiled without errors. Click Run to execute.</div>
-          </div>`;
-      }
+      if (aiPanel) aiPanel.innerHTML = `<div style="text-align:center;padding:1.5rem"><div style="font-size:2rem;margin-bottom:0.75rem">✅</div><div class="fw-700" style="color:var(--success)">Compilation Successful!</div><div class="text-sm text-muted" style="margin-top:0.35rem">Your code compiled without errors. Click Run to execute.</div></div>`;
       showToast('Code compiled successfully!', 'success');
+    } else {
+      console_el.innerHTML = `<div class="console-output cout-error">Compilation Failed</div><div class="console-output cout-error" style="margin-top:0.35rem">${s(result.compiler_output)}</div>`;
+      if (result.ai_analysis && aiPanel) {
+        const ai = result.ai_analysis;
+        aiPanel.innerHTML = `
+          <div class="error-card"><div class="error-card-title">🚫 ${s(ai.title || 'AI Analysis')}</div><div class="error-code">${s(result.compiler_output)}</div></div>
+          <div class="ai-explanation"><div class="ai-explanation-title">🤖 AI Explanation</div><div class="ai-explanation-text">${ai.explanation}</div></div>
+          <div class="ai-tip">💡 <div>${ai.tip}</div></div>`;
+      }
+      showToast('Compilation Failed — AI explanation ready', 'error');
     }
-  }, 1200);
+  } catch (error) {
+    console.error('Compile error:', error);
+    console_el.innerHTML = `<div class="console-output cout-error">Error: ${s(error.message)}</div>`;
+    showToast('Could not connect to the compiler service.', 'error');
+  }
 }
 
-function runCode() {
+async function runCode() {
   const console_el = document.getElementById('console-body');
-  if (!console_el) return;
-  if (console_el.innerHTML.includes('Compilation Failed')) { showToast('Fix compilation errors first', 'error'); return; }
+  const code = document.getElementById('code-textarea')?.value;
   const stdin = document.getElementById('stdin-input');
-  const input = stdin?.value || '5\n64 34 25 12 22';
+  const programId = document.getElementById('editor-program-id')?.value; // Assume an input holds the current program ID
+
+  if (!console_el || !code) return;
+
   console_el.innerHTML = `<div class="console-output cout-info">⟳ Executing...</div>`;
-  setTimeout(() => {
-    console_el.innerHTML = `
-      <div class="console-output cout-info">Enter number of elements: 5</div>
-      <div class="console-output cout-info">Enter elements: 64 34 25 12 22</div>
-      <div class="console-output cout-success">Sorted: 12 22 25 34 64</div>
-      <div class="console-output" style="color:#585b70;margin-top:0.5rem">Process exited with code 0 · Time: 0.002s · Memory: 1.2 MB</div>`;
-    showToast('Program executed successfully!', 'success');
-  }, 900);
+
+  try {
+    const token = localStorage.getItem('jwt_token');
+    const response = await fetch('/api/compiler/run', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ code: code, language: 'c', stdin: stdin?.value || '', program_id: programId })
+    });
+
+    if (!response.ok) throw new Error(`Server error: ${response.statusText}`);
+
+    const result = await response.json();
+
+    if (!result.compilation_success) {
+      console_el.innerHTML = `<div class="console-output cout-error">Compilation Failed</div><div class="console-output cout-error" style="margin-top:0.35rem">${s(result.compiler_output)}</div>`;
+      showToast('Fix compilation errors before running.', 'error');
+      return;
+    }
+
+    if (result.status === "Execution Successful") {
+      console_el.innerHTML = `<div class="console-output">${s(result.run_output)}</div>
+                              <div class="console-output" style="color:#585b70;margin-top:0.5rem">Process exited · Time: ${result.execution_time_ms}ms</div>`;
+      showToast('Program executed successfully!', 'success');
+    } else { // Handles Runtime Errors
+      console_el.innerHTML = `<div class="console-output cout-error">${s(result.status)}</div>`;
+      if (result.error) {
+        console_el.innerHTML += `<div class="console-output cout-error" style="margin-top:0.35rem">${s(result.error)}</div>`;
+      }
+      showToast(result.status || 'Execution failed.', 'error');
+    }
+  } catch (error) {
+    console.error('Run error:', error);
+    console_el.innerHTML = `<div class="console-output cout-error">Error: ${s(error.message)}</div>`;
+    showToast('Could not connect to the execution service.', 'error');
+  }
 }
 
 function resetCode() {
@@ -527,7 +584,9 @@ function resetCode() {
   if (ta) ta.value = DEFAULT_CODE;
   clearConsole();
   const aiPanel = document.getElementById('ai-panel-body');
-  if (aiPanel) aiPanel.innerHTML = `<div style="text-align:center;padding:2rem 1rem;color:var(--text-4)"><div style="font-size:2rem;margin-bottom:0.75rem">🤖</div><div class="text-sm fw-600" style="color:var(--text-3)">AI Assistant Ready</div><div class="text-xs" style="margin-top:0.35rem">Compile your code to get instant error explanations</div></div>`;
+  if (aiPanel) {
+    aiPanel.innerHTML = `<div style="text-align:center;padding:2rem 1rem;color:var(--text-4)"><div style="font-size:2rem;margin-bottom:0.75rem">🤖</div><div class="text-sm fw-600" style="color:var(--text-3)">AI Assistant Ready</div><div class="text-xs" style="margin-top:0.35rem">Compile your code to get instant error explanations</div></div>`;
+  }
   showToast('Editor reset', 'info');
 }
 
@@ -619,11 +678,11 @@ function showToast(msg, type = 'info') {
   const icons = { success:'✅', error:'❌', warning:'⚠️', info:'ℹ️' };
   const t = document.createElement('div');
   t.className = `toast ${type}`;
-  // Use textContent for msg to prevent XSS from any caller-supplied strings
+  // Use textContent for msg and icon to prevent XSS from any caller-supplied strings
   const icon = document.createElement('span'); icon.className = 'toast-icon'; icon.textContent = icons[type] || 'ℹ️';
   const msgEl = document.createElement('span'); msgEl.className = 'toast-msg'; msgEl.textContent = msg;
   const closeEl = document.createElement('span'); closeEl.className = 'toast-close'; closeEl.textContent = '✕';
-  closeEl.addEventListener('click', () => t.remove());
+  closeEl.onclick = () => t.remove();
   t.append(icon, msgEl, closeEl);
   root.appendChild(t);
   setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateX(100%)'; t.style.transition = '0.3s ease'; setTimeout(() => t.remove(), 300); }, 3500);

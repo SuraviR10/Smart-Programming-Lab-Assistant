@@ -35,43 +35,21 @@ function switchTab(id, btn) {
   if (btn) btn.classList.add('active');
 }
 
-// ── Dashboard Page Navigation ──
-function showPage(name) {
-  document.querySelectorAll('.page-section').forEach(s => s.style.display = 'none');
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+// ── Init charts on dashboard load ──
+window.addEventListener('load', () => {
+  renderChart('home');
 
-  const page = document.getElementById('page-' + name);
-  if (page) {
-    page.style.display = 'block';
-    page.style.animation = 'fade-up 0.4s ease';
-  }
+  // Animate progress bars after a short delay
+  setTimeout(() => {
+    document.querySelectorAll('.progress-fill').forEach(el => {
+      const w = el.style.width;
+      el.style.width = '0%';
+      setTimeout(() => { el.style.width = w; }, 100);
+    });
+  }, 300);
+});
 
-  // Title map
-  const titles = {
-    home: 'Dashboard', labs: 'My Labs', editor: 'Code Editor',
-    writeups: 'Write-Ups', exams: 'Examinations', analytics: 'Analytics',
-    errors: 'Error History', monitor: 'Live Monitor', students: 'Students',
-    manual: 'Lab Manual', grades: 'Grades', reports: 'Reports'
-  };
-  const titleEl = document.getElementById('page-title');
-  if (titleEl) titleEl.textContent = titles[name] || name;
-
-  // Mark nav active
-  document.querySelectorAll('.nav-item').forEach(n => {
-    if (n.getAttribute('onclick') && n.getAttribute('onclick').includes(`'${name}'`)) {
-      n.classList.add('active');
-    }
-  });
-
-  // Render chart if needed
-  if (['home', 'analytics', 'reports'].includes(name)) renderChart(name);
-
-  // Scroll to top of content
-  const content = document.querySelector('.dash-content');
-  if (content) content.scrollTop = 0;
-}
-
-// ── Chart Renderer ──
+// ── Chart Renderer (Landing Page specific, if any, or move to main.js) ──
 function renderChart(pageId) {
   const chartId = pageId === 'home' ? 'home-chart' :
                   pageId === 'analytics' ? 'analytics-chart' : 'reports-chart';
@@ -88,19 +66,6 @@ function renderChart(pageId) {
   });
 }
 
-// ── Init charts on dashboard load ──
-window.addEventListener('load', () => {
-  renderChart('home');
-
-  // Animate progress bars after a short delay
-  setTimeout(() => {
-    document.querySelectorAll('.progress-fill').forEach(el => {
-      const w = el.style.width;
-      el.style.width = '0%';
-      setTimeout(() => { el.style.width = w; }, 100);
-    });
-  }, 300);
-});
 
 // ── Code Editor: Compile & Run simulation ──
 const errorScenarios = [
@@ -164,48 +129,6 @@ function submitCode() {
   setTimeout(() => showToast('Auto-graded: 9/10 — Excellent logic structure!', 'success'), 2500);
 }
 
-// ── Exam Timer ──
-function startTimer(id, seconds) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  let remaining = seconds;
-  const tick = setInterval(() => {
-    remaining--;
-    if (remaining <= 0) { clearInterval(tick); el.textContent = '⏱ Time\'s up!'; el.style.color = 'var(--danger)'; return; }
-    const m = Math.floor(remaining / 60).toString().padStart(2, '0');
-    const s = (remaining % 60).toString().padStart(2, '0');
-    el.textContent = `⏱ ${m}:${s} remaining`;
-    if (remaining < 120) el.style.color = 'var(--danger)';
-  }, 1000);
-}
-
-window.addEventListener('load', () => {
-  startTimer('timer', 19 * 60 + 45);
-  startTimer('faculty-timer', 14 * 60 + 20);
-});
-
-// ── Toast Notifications ──
-function showToast(message, type = 'info') {
-  const container = document.getElementById('toast-container');
-  if (!container) return;
-
-  const toast = document.createElement('div');
-  const icons = { success: '✅', error: '❌', info: '💡' };
-  toast.className = `toast toast-${type === 'error' ? 'error' : type === 'success' ? 'success' : 'info'}`;
-  // Use textContent for message to prevent XSS
-  const iconSpan = document.createElement('span');
-  iconSpan.textContent = icons[type] || '💡';
-  const msgSpan = document.createElement('span');
-  msgSpan.textContent = message;
-  toast.append(iconSpan, msgSpan);
-  container.appendChild(toast);
-
-  setTimeout(() => {
-    toast.style.animation = 'toast-in 0.3s ease reverse';
-    setTimeout(() => toast.remove(), 300);
-  }, 3500);
-}
-
 // ── Modal ──
 function openModal(id) {
   const m = document.getElementById(id);
@@ -219,12 +142,6 @@ function closeModal(id) {
 document.addEventListener('click', e => {
   if (e.target.classList.contains('modal-overlay')) e.target.classList.remove('open');
 });
-
-// ── Sidebar Mobile Toggle ──
-function toggleSidebar() {
-  const sb = document.getElementById('sidebar');
-  if (sb) sb.classList.toggle('open');
-}
 
 // ── Scroll Reveal ──
 const observer = new IntersectionObserver((entries) => {

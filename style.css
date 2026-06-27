@@ -371,9 +371,10 @@ body {
 }
 .cta-box {
   max-width: 700px; margin: 0 auto; padding: 4rem 3rem;
-  background: linear-gradient(135deg, rgba(108,99,255,0.15), rgba(0,212,170,0.1));
-  border: 1px solid rgba(108,99,255,0.3); border-radius: 30px;
+  background: linear-gradient(135deg, rgba(37,99,235,0.15), rgba(22,163,74,0.1));
+  border: 1px solid var(--brand-mid); border-radius: var(--radius-lg);
   position: relative; overflow: hidden;
+  box-shadow: var(--shadow-md);
 }
 .cta-box::before {
   content: ''; position: absolute; top: -50%; left: -50%;

@@ -1,6 +1,7 @@
 """
 AI Service — wraps LLM providers for:
   - Compiler error explanation
+  - Runtime error explanation
   - Guided debugging hints
   - AI chat assistant
   - Personalized learning recommendations
@@ -16,7 +17,7 @@ from flask import current_app
 #  SYSTEM PROMPTS
 # ─────────────────────────────────────────────
 ERROR_ANALYSIS_SYSTEM = """You are an intelligent programming tutor for beginner C programming students.
-When given a compiler error message and the student's code, you must:
+When given a compiler or runtime error message and the student's code, you must:
 1. Explain the error in simple, beginner-friendly language (avoid jargon).
 2. Tell the student exactly what went wrong and on which line.
 3. Provide a short, actionable hint to fix it WITHOUT giving the complete corrected code.
@@ -96,25 +97,25 @@ def _call_llm(system_prompt: str, user_message: str, max_tokens: int = 800) -> s
     provider, client = _get_client()
 
     if provider == "openai":
-        response = client.chat.completions.create(
+        response = client.completions.create(
             model="gpt-4o-mini",
-            messages=[
+            messages=[ # type: ignore
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_message},
             ],
             max_tokens=max_tokens,
             temperature=0.3,
         )
-        return response.choices[0].message.content.strip()
+        return response.choices[0].message.content.strip() if response.choices and response.choices[0].message.content else ""
 
     if provider == "anthropic":
         response = client.messages.create(
-            model="claude-3-5-haiku-20241022",
+            model="claude-3-haiku-20240307",
             max_tokens=max_tokens,
             system=system_prompt,
             messages=[{"role": "user", "content": user_message}],
         )
-        return response.content[0].text.strip()
+        return response.content[0].text.strip() if response.content and response.content[0].text else ""
 
     return ""
 
@@ -134,16 +135,17 @@ def _parse_json_response(text: str) -> dict:
 #  PUBLIC SERVICE FUNCTIONS
 # ─────────────────────────────────────────────
 
-def analyze_compiler_error(raw_error: str, code: str, language: str = "c") -> dict:
+def analyze_compiler_error(raw_error: str, code: str, language: str = "c", is_runtime: bool = False) -> dict:
     """
-    Convert a raw GCC error message into a beginner-friendly explanation.
+    Convert a raw compiler or runtime error message into a beginner-friendly explanation.
     Returns a dict with: error_type, error_line, title, explanation, hint, tip
     """
+    error_type_str = "Runtime Error" if is_runtime else "Compiler Error"
     user_msg = (
         f"Language: {language.upper()}\n\n"
         f"Student's Code:\n```{language}\n{code}\n```\n\n"
-        f"Compiler Error:\n```\n{raw_error}\n```\n\n"
-        "Analyze this compiler error and respond with the JSON structure specified."
+        f"{error_type_str}:\n```\n{raw_error}\n```\n\n"
+        f"Analyze this {error_type_str.lower()} and respond with the JSON structure specified."
     )
     try:
         raw = _call_llm(ERROR_ANALYSIS_SYSTEM, user_msg, max_tokens=600)
@@ -172,7 +174,7 @@ def get_debugging_hint(code: str, error_description: str, language: str = "c") -
 
 def chat_with_assistant(
     message: str,
-    conversation_history: list,
+    conversation_history: list[dict[str, str]],
     context: dict | None = None,
 ) -> str:
     """
@@ -198,22 +200,22 @@ def chat_with_assistant(
 
     try:
         if provider == "openai":
-            response = client.chat.completions.create(
+            response = client.completions.create(
                 model="gpt-4o-mini",
                 messages=[{"role": "system", "content": system}] + messages,
                 max_tokens=500,
                 temperature=0.5,
             )
-            return response.choices[0].message.content.strip()
+            return response.choices[0].message.content.strip() if response.choices and response.choices[0].message.content else ""
 
         if provider == "anthropic":
             response = client.messages.create(
-                model="claude-3-5-haiku-20241022",
+                model="claude-3-haiku-20240307",
                 max_tokens=500,
                 system=system,
                 messages=messages,
             )
-            return response.content[0].text.strip()
+            return response.content[0].text.strip() if response.content and response.content[0].text else ""
 
     except Exception as exc:
         current_app.logger.error("Chat assistant failed: %s", exc)

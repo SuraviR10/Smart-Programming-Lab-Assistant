@@ -2,8 +2,8 @@
 
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from models import db, ErrorLog, Program
-from services.compiler_service import compile_and_run, compile_only, parse_compiler_errors
+from models import db, ErrorLog
+from services.compiler_service import compile_and_run, compile_only
 from services.ai_service import analyze_compiler_error, get_debugging_hint
 
 compiler_bp = Blueprint("compiler", __name__, url_prefix="/api/compiler")
@@ -42,17 +42,17 @@ def compile_code():
         response["ai_analysis"] = ai_analysis
 
         # Persist to error log
-        error_log = ErrorLog(
-            raw_error=raw_error[:2000],
-            error_type=ai_analysis.get("error_type"),
-            error_line=ai_analysis.get("error_line"),
-            ai_explanation=ai_analysis.get("explanation"),
-            ai_hint=ai_analysis.get("hint"),
-            ai_tip=ai_analysis.get("tip"),
-            code_snippet=code[:1000],
-            student_id=uid,
-            program_id=program_id,
-        )
+        error_log = ErrorLog()
+        error_log.raw_error = raw_error[:2000]
+        error_log.error_type = ai_analysis.get("error_type")
+        error_log.error_line = ai_analysis.get("error_line")
+        error_log.ai_explanation = ai_analysis.get("explanation")
+        error_log.ai_hint = ai_analysis.get("hint")
+        error_log.ai_tip = ai_analysis.get("tip")
+        error_log.code_snippet = code[:1000]
+        error_log.student_id = uid
+        error_log.program_id = program_id
+
         db.session.add(error_log)
         db.session.commit()
         response["error_log_id"] = error_log.id
@@ -68,24 +68,49 @@ def run_code():
     Compile and execute student code with provided stdin.
     Body: { code, language, stdin }
     """
+    uid = int(get_jwt_identity())
     data = request.get_json(silent=True) or {}
     code     = data.get("code", "").strip()
     language = data.get("language", "c").lower()
     stdin    = data.get("stdin", "")
+    program_id = data.get("program_id")
 
     if not code:
         return jsonify({"error": "No code provided."}), 400
 
     result = compile_and_run(code, language, stdin_data=stdin)
-    return jsonify({
-        "compilation_success": result["compilation_success"],
-        "compiler_output": result.get("compiler_output", ""),
-        "run_output": result.get("run_output", ""),
-        "execution_time_ms": result.get("execution_time_ms"),
-        "memory_kb": result.get("memory_kb"),
-        "status": result.get("status"),
-        "error": result.get("error"),
-    }), 200
+
+    # If there was a runtime error, log it and get AI analysis
+    is_runtime_error = result["compilation_success"] and result.get("status") == "Runtime Error"
+    if is_runtime_error and result.get("error"):
+        raw_error = result["error"]
+        ai_analysis = analyze_compiler_error(raw_error, code, language, is_runtime=True)
+        result["ai_analysis"] = ai_analysis
+
+        # Persist to error log
+        error_log = ErrorLog()
+        error_log.raw_error = raw_error[:2000]
+        error_log.error_type = ai_analysis.get("error_type", "runtime")
+        error_log.error_line = ai_analysis.get("error_line")
+        error_log.ai_explanation = ai_analysis.get("explanation")
+        error_log.ai_hint = ai_analysis.get("hint")
+        error_log.ai_tip = ai_analysis.get("tip")
+        error_log.code_snippet = code[:1000]
+        error_log.student_id = uid
+        error_log.program_id = program_id
+
+        db.session.add(error_log)
+        db.session.commit()
+        result["error_log_id"] = error_log.id
+
+    # If compilation failed, the frontend expects the AI analysis here
+    is_compile_error = not result["compilation_success"]
+    if is_compile_error and result.get("compiler_output"):
+        raw_error = result["compiler_output"]
+        ai_analysis = analyze_compiler_error(raw_error, code, language)
+        result["ai_analysis"] = ai_analysis
+
+    return jsonify(result), 200
 
 
 # ── DEBUGGING HINT ────────────────────────────

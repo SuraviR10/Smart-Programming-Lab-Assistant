@@ -3,9 +3,9 @@
 from datetime import datetime, timezone
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
-from models import db, WriteUp, Submission, Program, Lab, User, Role, WriteUpStatus, SubmissionStatus
-from services.assessment_service import grade_submission, get_writeup_results
-from services.analytics_service import build_performance_snapshot
+from models import db, WriteUp, Submission, Program, Lab, User, Role, WriteUpStatus, SubmissionStatus, Notification
+from services.assessment_service import grade_submission
+from services.analytics_service import build_performance_snapshot, get_writeup_results
 
 assessment_bp = Blueprint("assessment", __name__, url_prefix="/api/assessment")
 
@@ -34,16 +34,16 @@ def create_writeup():
     Lab.query.get_or_404(data["lab_id"])
     Program.query.get_or_404(data["program_id"])
 
-    wu = WriteUp(
-        title=data["title"].strip(),
-        lab_id=data["lab_id"],
-        program_id=data["program_id"],
-        duration_minutes=int(data["duration_minutes"]),
-        total_marks=float(data["total_marks"]),
-        enable_monitoring=data.get("enable_monitoring", True),
-        auto_submit=data.get("auto_submit", True),
-        status=WriteUpStatus.DRAFT,
-    )
+    wu = WriteUp()
+    wu.title = data["title"].strip()
+    wu.lab_id = data["lab_id"]
+    wu.program_id = data["program_id"]
+    wu.duration_minutes = int(data["duration_minutes"])
+    wu.total_marks = float(data["total_marks"])
+    wu.enable_monitoring = data.get("enable_monitoring", True)
+    wu.auto_submit = data.get("auto_submit", True)
+    wu.status = WriteUpStatus.DRAFT
+
     if data.get("start_time"):
         wu.start_time = datetime.fromisoformat(data["start_time"])
     if data.get("end_time"):
@@ -147,15 +147,15 @@ def submit_code():
         if existing:
             return jsonify({"error": "You have already submitted for this write-up.", "submission": existing.to_dict()}), 409
 
-    submission = Submission(
-        code=code,
-        language=language,
-        status=SubmissionStatus.PENDING,
-        student_id=uid,
-        program_id=program_id,
-        writeup_id=writeup_id,
-        max_marks=writeup.total_marks if writeup else 10.0,
-    )
+    submission = Submission()
+    submission.code = code
+    submission.language = language
+    submission.status = SubmissionStatus.PENDING
+    submission.student_id = uid
+    submission.program_id = program_id
+    submission.writeup_id = writeup_id
+    submission.max_marks = writeup.total_marks if writeup else 10.0
+
     # Copy monitoring data if provided
     submission.tab_switches    = data.get("tab_switches", 0)
     submission.window_blur_count = data.get("window_blur_count", 0)
@@ -259,14 +259,13 @@ def monitor_event():
     # Notify faculty via notification
     from models import Notification, WriteUp
     wu = WriteUp.query.get(writeup_id) if writeup_id else None
-    if wu:
+    if wu and wu.lab and wu.lab.faculty_id:
         student = User.query.get(uid)
-        notif = Notification(
-            title=f"Monitoring Alert — {student.name if student else 'Student'}",
-            message=f"Event: {event_type} during '{wu.title}'",
-            notification_type="alert",
-            user_id=wu.lab.faculty_id,
-        )
+        notif = Notification()
+        notif.title = f"Monitoring Alert — {student.name if student else 'Student'}"
+        notif.message = f"Event: {event_type} during '{wu.title}'"
+        notif.notification_type = "alert"
+        notif.user_id = wu.lab.faculty_id
         db.session.add(notif)
         db.session.commit()
 

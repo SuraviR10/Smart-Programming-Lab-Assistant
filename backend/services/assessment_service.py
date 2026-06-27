@@ -8,7 +8,7 @@ Assessment Service — automated grading engine
 
 from datetime import datetime, timezone
 from models import db, Submission, TestCase, TestResult, PerformanceSnapshot, SubmissionStatus
-from services.compiler_service import run_test_case, compile_only
+from services.compiler_service import compile_and_run, compile_only
 from services.ai_service import evaluate_code_logic
 
 
@@ -17,6 +17,29 @@ COMPILATION_WEIGHT = 0.30   # 30%
 OUTPUT_WEIGHT      = 0.40   # 40%
 LOGIC_WEIGHT       = 0.30   # 30%
 
+
+def run_test_case(code: str, input_data: str, expected_output: str, language: str) -> dict:
+    """
+    A helper to run a single test case and check the output.
+    This is a simplified version of compile_and_run for assessment.
+    """
+    result = compile_and_run(code, language, stdin_data=input_data)
+    if not result["compilation_success"] or result.get("status") == "Runtime Error":
+        return {
+            "passed": False,
+            "actual_output": result.get("error", "Compilation/Runtime Error"),
+            "expected_output": expected_output,
+            "execution_time_ms": result.get("execution_time_ms"),
+        }
+
+    actual_output = (result.get("run_output", "") or "").strip().replace("\r\n", "\n")
+    expected_output_stripped = (expected_output or "").strip().replace("\r\n", "\n")
+
+    return {
+        "passed": actual_output == expected_output_stripped,
+        "actual_output": actual_output,
+        **result,
+    }
 
 def grade_submission(submission: Submission, program, writeup=None) -> Submission:
     """
@@ -64,15 +87,15 @@ def grade_submission(submission: Submission, program, writeup=None) -> Submissio
         marks_awarded = tc.marks if passed else 0.0
         earned_tc_marks += marks_awarded
 
-        tr = TestResult(
-            submission_id=submission.id,
-            test_case_id=tc.id,
-            passed=passed,
-            actual_output=tc_result.get("actual_output", ""),
-            expected_output=tc_result.get("expected_output", ""),
-            marks_awarded=marks_awarded,
-            execution_time_ms=tc_result.get("execution_time_ms"),
-        )
+        tr = TestResult()
+        tr.submission_id = submission.id
+        tr.test_case_id = tc.id
+        tr.passed = passed
+        tr.actual_output = tc_result.get("actual_output", "")
+        tr.expected_output = tc_result.get("expected_output", "")
+        tr.marks_awarded = marks_awarded
+        tr.execution_time_ms = tc_result.get("execution_time_ms")
+
         db.session.add(tr)
 
         if tc_result.get("execution_time_ms") is not None:
@@ -116,85 +139,3 @@ def grade_submission(submission: Submission, program, writeup=None) -> Submissio
 
     db.session.commit()
     return submission
-
-
-def get_writeup_results(writeup_id: int) -> dict:
-    """
-    Aggregate results for a write-up assessment.
-    Returns summary stats + per-student breakdown.
-    """
-    submissions = Submission.query.filter_by(writeup_id=writeup_id).all()
-    if not submissions:
-        return {"count": 0, "average": 0, "highest": 0, "lowest": 0, "results": []}
-
-    scores = [s.total_score for s in submissions]
-    return {
-        "count": len(submissions),
-        "average": round(sum(scores) / len(scores), 2),
-        "highest": round(max(scores), 2),
-        "lowest": round(min(scores), 2),
-        "pass_rate": round(sum(1 for s in scores if s > 0) / len(scores) * 100, 1),
-        "results": [s.to_dict() for s in submissions],
-    }
-
-
-def build_performance_snapshot(student_id: int, lab_id: int | None = None) -> PerformanceSnapshot:
-    """
-    Compute and persist a performance snapshot for a student.
-    Called periodically or after each assessment.
-    """
-    from models import ErrorLog
-    from sqlalchemy import func
-
-    query = Submission.query.filter_by(student_id=student_id)
-    if lab_id:
-        # Filter by lab via program → lab join
-        from models import Program
-        lab_program_ids = [p.id for p in Program.query.filter_by(lab_id=lab_id).all()]
-        query = query.filter(Submission.program_id.in_(lab_program_ids))
-
-    submissions = query.all()
-    if not submissions:
-        snap = PerformanceSnapshot(student_id=student_id, lab_id=lab_id)
-        db.session.add(snap)
-        db.session.commit()
-        return snap
-
-    total = len(submissions)
-    compiled = sum(1 for s in submissions if s.compilation_score and s.compilation_score > 0)
-    avg_score = sum(s.total_score for s in submissions) / total
-    compile_rate = compiled / total if total else 0
-
-    # Most common error type
-    error_counts: dict[str, int] = {}
-    for el in ErrorLog.query.filter_by(student_id=student_id).all():
-        t = el.error_type or "unknown"
-        error_counts[t] = error_counts.get(t, 0) + 1
-    common_error = max(error_counts, key=error_counts.get) if error_counts else None
-    total_errors = sum(error_counts.values())
-
-    # AI assist count (number of error logs)
-    ai_assists = ErrorLog.query.filter_by(student_id=student_id).count()
-
-    # Risk level heuristic
-    if avg_score < 40 or (total_errors > 10 and avg_score < 60):
-        risk = "high"
-    elif avg_score < 65 or total_errors > 6:
-        risk = "medium"
-    else:
-        risk = "low"
-
-    snap = PerformanceSnapshot(
-        student_id=student_id,
-        lab_id=lab_id,
-        avg_score=round(avg_score, 2),
-        total_submissions=total,
-        compile_success_rate=round(compile_rate, 3),
-        common_error_type=common_error,
-        error_count=total_errors,
-        ai_assist_count=ai_assists,
-        risk_level=risk,
-    )
-    db.session.add(snap)
-    db.session.commit()
-    return snap

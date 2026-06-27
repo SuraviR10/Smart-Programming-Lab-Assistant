@@ -91,6 +91,25 @@ def _compute_risk(avg_score: float, error_count: int) -> str:
     return "low"
 
 
+def get_writeup_results(writeup_id: int) -> dict:
+    """
+    Aggregate results for a write-up assessment.
+    Returns summary stats + per-student breakdown.
+    """
+    submissions = Submission.query.filter_by(writeup_id=writeup_id).all()
+    if not submissions:
+        return {"count": 0, "average": 0, "highest": 0, "lowest": 0, "results": []}
+
+    scores = [s.total_score for s in submissions if s.total_score is not None]
+    return {
+        "count": len(submissions),
+        "average": round(sum(scores) / len(scores), 2) if scores else 0,
+        "highest": round(max(scores), 2) if scores else 0,
+        "lowest": round(min(scores), 2) if scores else 0,
+        "pass_rate": round(sum(1 for s in scores if s > 0) / len(scores) * 100, 1) if scores else 0,
+        "results": [s.to_dict() for s in submissions],
+    }
+
 # ─────────────────────────────────────────────
 #  FACULTY / CLASS ANALYTICS
 # ─────────────────────────────────────────────
@@ -285,3 +304,60 @@ def get_platform_stats() -> dict:
         "compile_success_rate": compile_rate,
         "top_error_types": [{"type": t or "unknown", "count": c} for t, c in error_dist],
     }
+
+
+def build_performance_snapshot(student_id: int, lab_id: int | None = None) -> PerformanceSnapshot:
+    """
+    Compute and persist a performance snapshot for a student.
+    Called periodically or after each assessment.
+    """
+    query = Submission.query.filter_by(student_id=student_id)
+    if lab_id:
+        # Filter by lab via program → lab join
+        lab_program_ids = [p.id for p in Program.query.filter_by(lab_id=lab_id).all()]
+        query = query.filter(Submission.program_id.in_(lab_program_ids))
+
+    submissions = query.all()
+    
+    # Find existing snapshot or create a new one
+    snap = PerformanceSnapshot.query.filter_by(student_id=student_id, lab_id=lab_id).first()
+    if not snap:
+        snap = PerformanceSnapshot()
+        snap.student_id = student_id
+        snap.lab_id = lab_id
+        db.session.add(snap)
+
+    if not submissions:
+        db.session.commit()
+        return snap
+
+    total = len(submissions)
+    scores = [s.total_score for s in submissions if s.total_score is not None]
+    avg_score = sum(scores) / len(scores) if scores else 0
+    
+    compiled_subs = [s for s in submissions if s.compilation_score is not None and s.compilation_score > 0]
+    compile_rate = len(compiled_subs) / total if total else 0
+
+    # Most common error type
+    error_logs = ErrorLog.query.filter_by(student_id=student_id).all()
+    error_counts = Counter(e.error_type or "unknown" for e in error_logs)
+    common_error = error_counts.most_common(1)[0][0] if error_counts else None
+    total_errors = len(error_logs)
+
+    # AI assist count (number of error logs)
+    ai_assists = total_errors
+
+    # Risk level heuristic
+    risk = _compute_risk(avg_score, total_errors)
+
+    # Update snapshot fields
+    snap.avg_score = round(avg_score, 2)
+    snap.total_submissions = total
+    snap.compile_success_rate = round(compile_rate, 3)
+    snap.common_error_type = common_error
+    snap.error_count = total_errors
+    snap.ai_assist_count = ai_assists
+    snap.risk_level = risk
+
+    db.session.commit()
+    return snap
