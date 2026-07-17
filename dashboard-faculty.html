@@ -20,19 +20,12 @@
     </div>
 
     <div class="nav-section">
-      <div class="nav-section-label">Overview</div>
+      <div class="nav-section-label">Main</div>
       <a href="#" class="nav-item active" onclick="showPage('home')">
-        <span class="icon">📊</span> Dashboard
+        <span class="icon">📊</span> Overview
       </a>
-    </div>
-
-    <div class="nav-section">
-      <div class="nav-section-label">Labs</div>
       <a href="#" class="nav-item" onclick="showPage('labs')">
-        <span class="icon">🧪</span> Manage Labs
-      </a>
-      <a href="#" class="nav-item" onclick="showPage('manual')">
-        <span class="icon">📚</span> Lab Manuals
+        <span class="icon">🧪</span> Labs
       </a>
       <a href="#" class="nav-item" onclick="showPage('students')">
         <span class="icon">👥</span> Students
@@ -40,7 +33,10 @@
     </div>
 
     <div class="nav-section">
-      <div class="nav-section-label">Assessments</div>
+      <div class="nav-section-label">Teaching</div>
+      <a href="#" class="nav-item" onclick="showPage('manual')">
+        <span class="icon">📚</span> Manuals
+      </a>
       <a href="#" class="nav-item" onclick="showPage('writeups')">
         <span class="icon">📝</span> Write-Ups
         <span class="nav-badge">3</span>
@@ -51,7 +47,7 @@
     </div>
 
     <div class="nav-section">
-      <div class="nav-section-label">Monitoring</div>
+      <div class="nav-section-label">Monitor</div>
       <a href="#" class="nav-item" onclick="showPage('monitor')">
         <span class="icon">🔍</span> Live Monitor
         <span class="nav-badge" style="background:var(--danger)">2</span>
@@ -75,7 +71,7 @@
         <h1 id="page-title">Faculty Dashboard</h1>
       </div>
       <div class="header-actions">
-        <button class="btn btn-primary btn-sm" onclick="openModal('create-lab-modal')">+ Create Lab</button>
+        <button class="btn btn-primary btn-sm" onclick="openModal('create-lab-modal')">+ New Lab</button>
         <div class="notif-btn" onclick="showPage('monitor')">
           🔔<div class="notif-badge">2</div>
         </div>
@@ -96,32 +92,28 @@
             <div class="stat-card-icon">🧪</div>
             <div class="stat-card-val gradient-text">6</div>
             <div class="stat-card-label">Active Labs</div>
-            <div class="stat-card-change up">↑ 1 this semester</div>
           </div>
           <div class="stat-card">
             <div class="stat-card-icon">👥</div>
             <div class="stat-card-val" style="color:var(--info)">142</div>
-            <div class="stat-card-label">Total Students</div>
-            <div class="stat-card-change up">↑ 12 enrolled</div>
+            <div class="stat-card-label">Students</div>
           </div>
           <div class="stat-card">
             <div class="stat-card-icon">📝</div>
             <div class="stat-card-val" style="color:var(--success)">38</div>
-            <div class="stat-card-label">Submissions Today</div>
-            <div class="stat-card-change up">↑ High activity</div>
+            <div class="stat-card-label">Submissions</div>
           </div>
           <div class="stat-card">
             <div class="stat-card-icon">🚨</div>
             <div class="stat-card-val" style="color:var(--danger)">2</div>
-            <div class="stat-card-label">Active Alerts</div>
-            <div class="stat-card-change down">Needs attention</div>
+            <div class="stat-card-label">Alerts</div>
           </div>
         </div>
 
         <div class="grid-2">
           <!-- Alerts -->
           <div class="card">
-            <div class="card-title">🚨 Recent Alerts</div>
+            <div class="card-title">⚡ Recent Alerts</div>
             <div class="alert-list">
               <div class="alert-item err" style="cursor:pointer" onclick="showPage('monitor')">
                 <span>🚨</span>
@@ -151,7 +143,7 @@
 
           <!-- Top Performers -->
           <div class="card">
-            <div class="card-title">🏆 Top Performers — C Lab</div>
+            <div class="card-title">🏆 Top Performers</div>
             <div style="display:flex;flex-direction:column;gap:0.7rem">
               <div style="display:flex;align-items:center;gap:1rem;padding:0.7rem;border-radius:10px;background:rgba(108,99,255,0.08)">
                 <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#ffd166,#ff6584);display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;color:#fff;flex-shrink:0">RK</div>
@@ -183,7 +175,7 @@
 
         <!-- Class Chart -->
         <div class="card">
-          <div class="card-title">📊 Class Performance — C Programming Lab (Section A)</div>
+          <div class="card-title">📊 Class Performance</div>
           <div class="chart-placeholder" id="home-chart"></div>
           <div style="display:flex;justify-content:center;gap:2rem;margin-top:1rem;font-size:0.78rem;color:var(--text-muted)">
             <span>WU1</span><span>WU2</span><span>WU3</span><span>WU4</span><span>WU5</span><span>WU6</span><span>WU7</span>

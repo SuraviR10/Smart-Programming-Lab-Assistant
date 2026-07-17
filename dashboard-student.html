@@ -44,10 +44,7 @@
     </div>
 
     <div class="nav-section">
-      <div class="nav-section-label">Insights</div>
-      <a href="#" class="nav-item" onclick="showPage('analytics')">
-        <span class="icon">📊</span> Analytics
-      </a>
+      <div class="nav-section-label">Support</div>
       <a href="#" class="nav-item" onclick="showPage('errors')">
         <span class="icon">🔍</span> Error History
       </a>
@@ -169,72 +166,7 @@
 
       <!-- PAGE: LABS -->
       <div id="page-labs" class="page-section" style="display:none">
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem">
-          <div class="lab-card" onclick="showPage('editor')">
-            <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#6c63ff,#00d4aa)"></div>
-            <div class="lab-card-icon">⚙️</div>
-            <h3>C Programming Lab</h3>
-            <p>Section A — Dr. Ramesh</p>
-            <div class="lab-card-meta">
-              <span class="tag tag-green">Active</span>
-              <span class="tag tag-purple">10 Programs</span>
-            </div>
-            <div class="progress-bar" style="height:6px">
-              <div class="progress-fill" style="width:80%"></div>
-            </div>
-            <div style="display:flex;justify-content:space-between;margin-top:0.4rem;font-size:0.75rem;color:var(--text-muted)">
-              <span>8/10 completed</span><span>80%</span>
-            </div>
-          </div>
-          <div class="lab-card" onclick="showPage('editor')">
-            <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#00d4aa,#4fc3f7)"></div>
-            <div class="lab-card-icon">🌳</div>
-            <h3>Data Structures Lab</h3>
-            <p>Section A — Prof. Sujatha</p>
-            <div class="lab-card-meta">
-              <span class="tag tag-green">Active</span>
-              <span class="tag tag-blue">12 Programs</span>
-            </div>
-            <div class="progress-bar" style="height:6px">
-              <div class="progress-fill" style="width:58%"></div>
-            </div>
-            <div style="display:flex;justify-content:space-between;margin-top:0.4rem;font-size:0.75rem;color:var(--text-muted)">
-              <span>7/12 completed</span><span>58%</span>
-            </div>
-          </div>
-          <div class="lab-card">
-            <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#ff6584,#ffd166)"></div>
-            <div class="lab-card-icon">🤖</div>
-            <h3>Machine Learning Lab</h3>
-            <p>Section B — Dr. Meera</p>
-            <div class="lab-card-meta">
-              <span class="tag tag-yellow">Upcoming</span>
-              <span class="tag tag-purple">8 Programs</span>
-            </div>
-            <div class="progress-bar" style="height:6px">
-              <div class="progress-fill" style="width:25%"></div>
-            </div>
-            <div style="display:flex;justify-content:space-between;margin-top:0.4rem;font-size:0.75rem;color:var(--text-muted)">
-              <span>2/8 completed</span><span>25%</span>
-            </div>
-          </div>
-          <div class="lab-card">
-            <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#4fc3f7,#6c63ff)"></div>
-            <div class="lab-card-icon">🌐</div>
-            <h3>Full Stack Dev Lab</h3>
-            <p>Section C — Prof. Arun</p>
-            <div class="lab-card-meta">
-              <span class="tag tag-green">Active</span>
-              <span class="tag tag-blue">15 Programs</span>
-            </div>
-            <div class="progress-bar" style="height:6px">
-              <div class="progress-fill" style="width:45%"></div>
-            </div>
-            <div style="display:flex;justify-content:space-between;margin-top:0.4rem;font-size:0.75rem;color:var(--text-muted)">
-              <span>7/15 completed</span><span>45%</span>
-            </div>
-          </div>
-        </div>
+        <div id="labs-grid-container" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem"></div>
       </div>
 
       <!-- PAGE: EDITOR -->
@@ -259,28 +191,28 @@
           </div>
 
           <div class="editor-area">
-            <div class="code-editor" id="code-area">
-              <div><span class="line-numbers">1</span><span class="cm">// Write-Up 4: Bubble Sort</span></div>
-              <div><span class="line-numbers">2</span><span class="kw">#include</span><span class="str"> &lt;stdio.h&gt;</span></div>
-              <div><span class="line-numbers">3</span></div>
-              <div><span class="line-numbers">4</span><span class="kw">int</span> <span class="fn">main</span>() {</div>
-              <div><span class="line-numbers">5</span>  <span class="kw">int</span> a[] = {<span class="num">64</span>, <span class="num">34</span>, <span class="num">25</span>, <span class="num">12</span>, <span class="num">22</span>};</div>
-              <div><span class="line-numbers">6</span>  <span class="kw">int</span> n = <span class="num">5</span>, i, j, temp;</div>
-              <div><span class="line-numbers">7</span>  <span class="kw">for</span>(i = <span class="num">0</span>; i &lt; n-<span class="num">1</span>; i++) {</div>
-              <div><span class="line-numbers">8</span>    <span class="kw">for</span>(j = <span class="num">0</span>; j &lt; n-i-<span class="num">1</span>; j++) {</div>
-              <div><span class="line-numbers">9</span>      <span class="kw">if</span>(a[j] &gt; a[j+<span class="num">1</span>]) {</div>
-              <div><span class="line-numbers">10</span>        temp = a[j];</div>
-              <div><span class="line-numbers">11</span>        a[j] = a[j+<span class="num">1</span>];</div>
-              <div><span class="line-numbers">12</span>        a[j+<span class="num">1</span>] = temp;</div>
-              <div><span class="line-numbers">13</span>      }</div>
-              <div><span class="line-numbers">14</span>    }</div>
-              <div><span class="line-numbers">15</span>  }</div>
-              <div><span class="line-numbers">16</span>  <span class="fn">printf</span>(<span class="str">"Sorted: "</span>);</div>
-              <div><span class="line-numbers">17</span>  <span class="kw">for</span>(i = <span class="num">0</span>; i &lt; n; i++)</div>
-              <div><span class="line-numbers">18</span>    <span class="fn">printf</span>(<span class="str">"%d "</span>, a[i])</div>
-              <div><span class="line-numbers">19</span>  <span class="kw">return</span> <span class="num">0</span>;</div>
-              <div><span class="line-numbers">20</span>}</div>
-            </div>
+            <textarea class="code-editor" id="code-area" spellcheck="false">#include &lt;stdio.h&gt;
+
+int main() {
+    int a[] = {64, 34, 25, 12, 22};
+    int n = 5, i, j, temp;
+
+    for (i = 0; i &lt; n - 1; i++) {
+        for (j = 0; j &lt; n - i - 1; j++) {
+            if (a[j] &gt; a[j + 1]) {
+                temp = a[j];
+                a[j] = a[j + 1];
+                a[j + 1] = temp;
+            }
+        }
+    }
+
+    printf("Sorted: ");
+    for (i = 0; i &lt; n; i++) {
+        printf("%d ", a[i]);
+    }
+    return 0;
+}</textarea>
             <div class="editor-output">
               <div class="output-label">Output</div>
               <div id="output-area" style="color:var(--text-muted);font-size:0.82rem">Click <strong>Compile &amp; Run</strong> to execute...</div>
@@ -457,29 +389,7 @@
               <thead>
                 <tr><th>Date</th><th>Program</th><th>Error Type</th><th>GCC Message</th><th>AI Explanation</th></tr>
               </thead>
-              <tbody>
-                <tr>
-                  <td style="white-space:nowrap">Today 10:15</td>
-                  <td>Bubble Sort</td>
-                  <td><span class="badge badge-danger">Syntax</span></td>
-                  <td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem">expected ';' before 'return'</td>
-                  <td style="font-size:0.82rem;color:var(--text-muted)">Missing semicolon on line 18 after printf statement</td>
-                </tr>
-                <tr>
-                  <td style="white-space:nowrap">Yesterday</td>
-                  <td>Matrix Add</td>
-                  <td><span class="badge badge-warning">Undeclared</span></td>
-                  <td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem">'j' undeclared</td>
-                  <td style="font-size:0.82rem;color:var(--text-muted)">Variable 'j' used in loop but not declared in int declarations</td>
-                </tr>
-                <tr>
-                  <td style="white-space:nowrap">Jan 8</td>
-                  <td>Fibonacci</td>
-                  <td><span class="badge badge-info">Logic</span></td>
-                  <td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem">implicit declaration of 'printf'</td>
-                  <td style="font-size:0.82rem;color:var(--text-muted)">Missing #include &lt;stdio.h&gt; at the top of the file</td>
-                </tr>
-              </tbody>
+              <tbody id="error-history-body"></tbody>
             </table>
           </div>
         </div>
@@ -491,5 +401,164 @@
 
 <div id="toast-container"></div>
 <script src="app.js"></script>
+<script>
+const studentLabs = [
+  { icon: '⚙️', title: 'C Programming Lab', meta: 'Section A — Dr. Ramesh', badge: 'Active', programs: '10 Programs', completed: '8/10', pct: '80%', accent: 'linear-gradient(90deg,#6c63ff,#00d4aa)' },
+  { icon: '🌳', title: 'Data Structures Lab', meta: 'Section A — Prof. Sujatha', badge: 'Active', programs: '12 Programs', completed: '7/12', pct: '58%', accent: 'linear-gradient(90deg,#00d4aa,#4fc3f7)' },
+  { icon: '🤖', title: 'Machine Learning Lab', meta: 'Section B — Dr. Meera', badge: 'Upcoming', programs: '8 Programs', completed: '2/8', pct: '25%', accent: 'linear-gradient(90deg,#ff6584,#ffd166)' },
+  { icon: '🌐', title: 'Full Stack Dev Lab', meta: 'Section C — Prof. Arun', badge: 'Active', programs: '15 Programs', completed: '7/15', pct: '45%', accent: 'linear-gradient(90deg,#4fc3f7,#6c63ff)' }
+];
+
+const errorHistory = [
+  { date: 'Today 10:15', program: 'Bubble Sort', type: 'Syntax', badgeClass: 'badge-danger', detail: 'Missing semicolon after the printf statement' },
+  { date: 'Yesterday', program: 'Matrix Add', type: 'Undeclared', badgeClass: 'badge-warning', detail: 'Variable used in loop but declared in the wrong scope' },
+  { date: 'Jan 8', program: 'Fibonacci', type: 'Logic', badgeClass: 'badge-info', detail: 'The loop condition needs a closer review' }
+];
+
+function showPage(page) {
+  document.querySelectorAll('.page-section').forEach(section => section.style.display = 'none');
+  const target = document.getElementById(`page-${page}`);
+  if (target) target.style.display = 'block';
+
+  document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+  const activeLink = Array.from(document.querySelectorAll('.nav-item')).find(link => link.getAttribute('onclick') === `showPage('${page}')`);
+  if (activeLink) activeLink.classList.add('active');
+
+  const titleMap = { home: 'Dashboard', labs: 'My Labs', editor: 'Code Editor', writeups: 'Write-Ups', exams: 'Exams', analytics: 'Analytics', errors: 'Error History' };
+  const titleEl = document.getElementById('page-title');
+  if (titleEl) titleEl.textContent = titleMap[page] || 'Dashboard';
+}
+
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  if (sidebar) sidebar.classList.toggle('open');
+}
+
+function renderLabs() {
+  const container = document.getElementById('labs-grid-container');
+  if (!container) return;
+  container.innerHTML = studentLabs.map(lab => `
+    <div class="lab-card" onclick="showPage('editor')">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${lab.accent}"></div>
+      <div class="lab-card-icon">${lab.icon}</div>
+      <h3>${lab.title}</h3>
+      <p>${lab.meta}</p>
+      <div class="lab-card-meta">
+        <span class="tag ${lab.badge === 'Active' ? 'tag-green' : 'tag-yellow'}">${lab.badge}</span>
+        <span class="tag tag-purple">${lab.programs}</span>
+      </div>
+      <div class="progress-bar" style="height:6px">
+        <div class="progress-fill" style="width:${lab.pct}"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:0.4rem;font-size:0.75rem;color:var(--text-muted)">
+        <span>${lab.completed} completed</span><span>${lab.pct}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderErrorHistory() {
+  const tbody = document.getElementById('error-history-body');
+  if (!tbody) return;
+  tbody.innerHTML = errorHistory.map(item => `
+    <tr>
+      <td style="white-space:nowrap">${item.date}</td>
+      <td>${item.program}</td>
+      <td><span class="badge ${item.badgeClass}">${item.type}</span></td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem">${item.program}</td>
+      <td style="font-size:0.82rem;color:var(--text-muted)">${item.detail}</td>
+    </tr>
+  `).join('');
+}
+
+function showToast(msg, type = 'info') {
+  const container = document.getElementById('toast-container');
+  if (!container) return;
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  toast.textContent = msg;
+  container.appendChild(toast);
+  setTimeout(() => toast.remove(), 2200);
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/\"/g, '&quot;');
+}
+
+async function runCode() {
+  const editor = document.getElementById('code-area');
+  const output = document.getElementById('output-area');
+  const aiPanel = document.getElementById('ai-panel');
+  const aiContent = document.getElementById('ai-content');
+  if (!editor || !output) return;
+
+  const code = editor.value.trim();
+  if (!code) {
+    output.innerHTML = '<div class="output-error">Please enter some C code before running.</div>';
+    return;
+  }
+
+  output.innerHTML = '<div class="output-label">Compiling…</div><div class="output-success">Connecting to the compiler backend…</div>';
+  if (aiPanel) aiPanel.style.display = 'none';
+
+  try {
+    const response = await fetch('http://localhost:8000/run', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ language: 'c', code, stdin: '' })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Server returned ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    if (data.success) {
+      output.innerHTML = `<div class="output-label">Program Output</div><div class="output-success">${escapeHtml(data.output || '(no output)')}</div>`;
+      showToast('Program compiled and executed successfully.', 'success');
+      return;
+    }
+
+    const compilerMessage = data.compiler_error || 'Compilation failed.';
+    output.innerHTML = `<div class="output-label">Compiler Error</div><div class="output-error">${escapeHtml(compilerMessage)}</div>`;
+    const fb = data.ai_feedback || {};
+    if (aiPanel && aiContent) {
+      aiPanel.style.display = 'block';
+      aiContent.innerHTML = `
+        <div style="display:flex;flex-direction:column;gap:0.75rem">
+          <div><strong>Explanation</strong><br>${escapeHtml(fb.explanation || 'No explanation was returned.')}</div>
+          <div><strong>Why it happened</strong><br>${escapeHtml(fb.reason || 'The compiler message was not detailed enough to provide a deeper explanation.')}</div>
+          <div><strong>Debugging hint</strong><br>${escapeHtml(fb.hint || 'Review the line indicated by the compiler message and check for syntax issues.')}</div>
+          <div><strong>Concept</strong><br>${escapeHtml(fb.concept || 'Compiler errors are usually caused by small syntax issues such as missing semicolons or brackets.')}</div>
+        </div>
+      `;
+    }
+    showToast('Compilation failed — review the guidance below.', 'error');
+  } catch (err) {
+    output.innerHTML = '<div class="output-label">Connection Error</div><div class="output-error">Could not reach the FastAPI backend. Start the server on localhost:8000 and try again.</div>';
+    showToast('Compiler backend is unavailable.', 'error');
+  }
+}
+
+function submitCode() {
+  const output = document.getElementById('output-area');
+  if (output && output.textContent.includes('Program Output')) {
+    showToast('Submission sent for review.', 'success');
+    return;
+  }
+  showToast('Please compile successfully before submitting.', 'error');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderLabs();
+  renderErrorHistory();
+  showPage('home');
+});
+</script>
 </body>
 </html>

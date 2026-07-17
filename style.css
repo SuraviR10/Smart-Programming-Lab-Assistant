@@ -558,7 +558,8 @@ footer {
 .code-editor {
   padding: 1rem; font-family: 'JetBrains Mono', monospace;
   font-size: 0.82rem; line-height: 1.8; border-right: 1px solid rgba(255,255,255,0.06);
-  position: relative;
+  position: relative; resize: none; width: 100%; min-height: 320px;
+  background: transparent; border: none; outline: none; color: var(--text);
 }
 .line-numbers {
   color: #555; user-select: none; margin-right: 1rem;

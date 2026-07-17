@@ -67,68 +67,6 @@ function renderChart(pageId) {
 }
 
 
-// ── Code Editor: Compile & Run simulation ──
-const errorScenarios = [
-  {
-    trigger: true, // always show error for demo
-    output: '',
-    errorMsg: "main.c:18:5: error: expected ';' before 'return'",
-    aiTitle: '🚫 Missing Semicolon',
-    aiMsg: `<strong>What went wrong:</strong> The <code style="color:#c3e88d">printf</code> statement on line 18 is missing a semicolon (<code style="color:#c3e88d">;</code>) at the end.<br><br>
-            <strong>How to fix it:</strong> Add a <code style="color:#c3e88d">;</code> after the closing parenthesis on line 18:<br>
-            <code style="color:#f78c6c;font-family:'JetBrains Mono',monospace">printf("%d ", a[i]);</code><br><br>
-            <em style="color:#6c63ff">💡 Tip: In C, every statement must end with a semicolon.</em>`
-  }
-];
-
-let runCount = 0;
-function runCode() {
-  const outputEl = document.getElementById('output-area');
-  const aiPanel = document.getElementById('ai-panel');
-  const aiContent = document.getElementById('ai-content');
-  if (!outputEl) return;
-
-  // Use textContent for the initial status message — no injection risk
-  outputEl.textContent = 'Compiling with GCC...';
-  outputEl.style.color = '#4fc3f7';
-  if (aiPanel) aiPanel.style.display = 'none';
-
-  setTimeout(() => {
-    runCount++;
-    if (runCount % 2 === 1) {
-      // Error path — errorMsg and aiTitle/aiMsg are static strings defined in errorScenarios
-      const errorDiv = document.createElement('div');
-      errorDiv.className = 'output-error';
-      errorDiv.textContent = errorScenarios[0].errorMsg;
-      outputEl.textContent = '';
-      outputEl.style.color = '';
-      outputEl.appendChild(errorDiv);
-      if (aiPanel && aiContent) {
-        // aiMsg contains trusted static HTML markup (no user input) — safe to use directly
-        aiContent.innerHTML = `<div style="margin-bottom:0.5rem;font-weight:600;color:var(--danger)">${errorScenarios[0].aiTitle}</div>${errorScenarios[0].aiMsg}`;
-        aiPanel.style.display = 'block';
-        aiPanel.style.animation = 'fade-in 0.5s ease';
-      }
-      showToast('Compilation failed — AI analysis ready below', 'error');
-    } else {
-      // Success path — fully static content
-      outputEl.innerHTML = '<div class="output-success">✅ Compilation successful<br><br>Sorted: 12 22 25 34 64 </div>';
-      if (aiPanel) aiPanel.style.display = 'none';
-      showToast('Program compiled and executed successfully!', 'success');
-    }
-  }, 1200);
-}
-
-function submitCode() {
-  const outputEl = document.getElementById('output-area');
-  if (outputEl && !outputEl.innerHTML.includes('Compilation successful')) {
-    showToast('Please fix compilation errors before submitting', 'error');
-    return;
-  }
-  showToast('Submission sent! Auto-evaluation in progress...', 'success');
-  setTimeout(() => showToast('Auto-graded: 9/10 — Excellent logic structure!', 'success'), 2500);
-}
-
 // ── Modal ──
 function openModal(id) {
   const m = document.getElementById(id);

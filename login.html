@@ -180,9 +180,9 @@
     txt.innerHTML = '<span class="spin" style="display:inline-block">⟳</span>&nbsp;Signing in...';
     setTimeout(() => {
       const redirects = {
-        admin: 'admin-dashboard.html',
-        faculty: 'faculty-dashboard.html',
-        student: 'student-dashboard.html'
+        admin: 'dashboard-faculty.html',
+        faculty: 'dashboard-faculty.html',
+        student: 'dashboard-student.html'
       };
       showToast('Login successful! Redirecting...', 'success');
       setTimeout(() => { window.location.href = redirects[selectedRole]; }, 800);

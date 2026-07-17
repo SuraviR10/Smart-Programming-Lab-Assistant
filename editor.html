@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Code Editor — Lab Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  /* ── Tokens ── */
+  :root {
+    --brand: #3b82f6;
+    --brand-dark: #2563eb;
+    --success: #22c55e;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --info: #06b6d4;
+    --bg: #0f172a;
+    --surface: #1e293b;
+    --surface-2: #263348;
+    --border: #334155;
+    --text: #f1f5f9;
+    --text-2: #cbd5e1;
+    --text-3: #94a3b8;
+    --text-4: #64748b;
+    --editor-bg: #1e1e2e;
+    --editor-bar: #181825;
+    --radius: 10px;
+    --radius-sm: 6px;
+    --transition: 0.18s ease;
+  }
+  [data-theme="light"] {
+    --brand: #2563eb;
+    --bg: #f1f5f9;
+    --surface: #ffffff;
+    --surface-2: #f8fafc;
+    --border: #e2e8f0;
+    --text: #0f172a;
+    --text-2: #334155;
+    --text-3: #64748b;
+    --text-4: #94a3b8;
+    --editor-bg: #1e1e2e;
+    --editor-bar: #181825;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; overflow: hidden; }
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+  }
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+
+  /* ── Top Bar ── */
+  .topbar {
+    height: 52px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1.25rem;
+    gap: 1rem;
+    flex-shrink: 0;
+  }
+  .topbar-left { display: flex; align-items: center; gap: 0.75rem; }
+  .topbar-logo {
+    width: 30px; height: 30px;
+    background: var(--brand);
+    border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem; color: white; flex-shrink: 0;
+  }
+  .topbar-title { font-size: 0.88rem; font-weight: 700; color: var(--text); }
+  .topbar-lab {
+    font-size: 0.75rem; color: var(--text-3);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    padding: 0.2rem 0.75rem;
+  }
+
+  .topbar-right { display: flex; align-items: center; gap: 0.6rem; }
+
+  .lang-select {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-2);
+    font-size: 0.78rem;
+    font-family: 'JetBrains Mono', monospace;
+    padding: 0.3rem 0.6rem;
+    outline: none;
+    cursor: pointer;
+  }
+
+  .btn-run {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.4rem 1.1rem;
+    background: var(--brand);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 0.82rem; font-weight: 600;
+    cursor: pointer;
+    transition: background var(--transition), transform var(--transition);
+  }
+  .btn-run:hover { background: var(--brand-dark); }
+  .btn-run:active { transform: scale(0.97); }
+  .btn-run:disabled { opacity: 0.55; cursor: not-allowed; }
+  .btn-run .run-icon { font-size: 0.75rem; }
+
+  .btn-icon {
+    width: 32px; height: 32px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-3); font-size: 0.9rem;
+    cursor: pointer; transition: all var(--transition);
+  }
+  .btn-icon:hover { border-color: var(--brand); color: var(--brand); }
+
+  /* ── Main Layout ── */
+  .workspace {
+    display: flex;
+    height: calc(100vh - 52px);
+    overflow: hidden;
+  }
+
+  /* ── Editor Pane ── */
+  .editor-pane {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    border-right: 1px solid var(--border);
+  }
+  .editor-file-bar {
+    height: 36px;
+    background: var(--editor-bar);
+    border-bottom: 1px solid #2a2a3e;
+    display: flex;
+    align-items: center;
+    padding: 0 1rem;
+    gap: 0.5rem;
+    flex-shrink: 0;
+  }
+  .file-tab {
+    display: flex; align-items: center; gap: 0.4rem;
+    padding: 0.25rem 0.75rem;
+    background: var(--editor-bg);
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    font-size: 0.75rem; font-weight: 500;
+    color: #cdd6f4;
+    font-family: 'JetBrains Mono', monospace;
+    border-top: 2px solid var(--brand);
+  }
+  .file-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--brand); }
+
+  #monaco-container {
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* ── Stdin Bar ── */
+  .stdin-bar {
+    height: 40px;
+    background: var(--editor-bar);
+    border-top: 1px solid #2a2a3e;
+    display: flex;
+    align-items: center;
+    padding: 0 1rem;
+    gap: 0.75rem;
+    flex-shrink: 0;
+  }
+  .stdin-label {
+    font-size: 0.7rem; font-weight: 600;
+    color: #6c7086;
+    font-family: 'JetBrains Mono', monospace;
+    white-space: nowrap;
+  }
+  .stdin-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #cdd6f4;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+  }
+  .stdin-input::placeholder { color: #45475a; }
+
+  /* ── Output Pane ── */
+  .output-pane {
+    width: 380px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    overflow: hidden;
+  }
+  .output-header {
+    height: 36px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1rem;
+    flex-shrink: 0;
+  }
+  .output-header-left { display: flex; align-items: center; gap: 0.5rem; }
+  .output-title { font-size: 0.78rem; font-weight: 700; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.06em; }
+  .status-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--text-4);
+    transition: background var(--transition);
+  }
+  .status-dot.running { background: var(--warning); animation: pulse 1s ease infinite; }
+  .status-dot.success { background: var(--success); }
+  .status-dot.error   { background: var(--danger); }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  .exec-time { font-size: 0.7rem; color: var(--text-4); font-family: 'JetBrains Mono', monospace; }
+
+  .output-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  /* ── Empty State ── */
+  .empty-state {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    color: var(--text-4);
+    text-align: center;
+    padding: 2rem;
+  }
+  .empty-icon { font-size: 2.5rem; opacity: 0.4; }
+  .empty-state p { font-size: 0.82rem; line-height: 1.6; }
+
+  /* ── Output Cards ── */
+  .out-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    animation: slide-up 0.25s ease;
+  }
+  @keyframes slide-up { from { transform: translateY(10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+  .out-card-head {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.6rem 0.875rem;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.72rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    cursor: pointer;
+    user-select: none;
+  }
+  .out-card-head .head-icon { font-size: 0.85rem; }
+  .out-card-head .chevron { margin-left: auto; font-size: 0.7rem; color: var(--text-4); transition: transform var(--transition); }
+  .out-card.collapsed .chevron { transform: rotate(-90deg); }
+  .out-card.collapsed .out-card-body { display: none; }
+
+  .out-card-body { padding: 0.875rem; font-size: 0.82rem; line-height: 1.7; color: var(--text-2); }
+
+  /* Card color variants */
+  .card-success .out-card-head { background: rgba(34,197,94,0.08); color: var(--success); border-color: rgba(34,197,94,0.2); }
+  .card-success { border-color: rgba(34,197,94,0.25); }
+
+  .card-error .out-card-head { background: rgba(239,68,68,0.08); color: var(--danger); border-color: rgba(239,68,68,0.2); }
+  .card-error { border-color: rgba(239,68,68,0.25); }
+
+  .card-explain .out-card-head { background: rgba(59,130,246,0.08); color: var(--brand); border-color: rgba(59,130,246,0.2); }
+  .card-explain { border-color: rgba(59,130,246,0.2); }
+
+  .card-hint .out-card-head { background: rgba(34,197,94,0.06); color: #4ade80; border-color: rgba(34,197,94,0.15); }
+  .card-hint { border-color: rgba(34,197,94,0.15); }
+
+  .card-concept .out-card-head { background: rgba(168,85,247,0.08); color: #a78bfa; border-color: rgba(168,85,247,0.2); }
+  .card-concept { border-color: rgba(168,85,247,0.2); }
+
+  .card-warn .out-card-head { background: rgba(245,158,11,0.08); color: var(--warning); border-color: rgba(245,158,11,0.2); }
+  .card-warn { border-color: rgba(245,158,11,0.2); }
+
+  /* Code block inside card */
+  .code-block {
+    background: var(--editor-bg);
+    border-radius: var(--radius-sm);
+    padding: 0.6rem 0.75rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: #f38ba8;
+    line-height: 1.6;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .code-block.success-out { color: #a6e3a1; }
+
+  /* Line badge */
+  .line-badge {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    background: rgba(245,158,11,0.12);
+    color: var(--warning);
+    border: 1px solid rgba(245,158,11,0.25);
+    border-radius: 99px;
+    padding: 0.15rem 0.6rem;
+    font-size: 0.7rem; font-weight: 600;
+    font-family: 'JetBrains Mono', monospace;
+    margin-bottom: 0.5rem;
+    display: inline-block;
+  }
+
+  /* Source badge */
+  .source-badge {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    font-size: 0.68rem; font-weight: 600;
+    padding: 0.15rem 0.55rem;
+    border-radius: 99px;
+    margin-top: 0.5rem;
+  }
+  .source-kb { background: rgba(6,182,212,0.1); color: var(--info); border: 1px solid rgba(6,182,212,0.2); }
+  .source-ai { background: rgba(168,85,247,0.1); color: #a78bfa; border: 1px solid rgba(168,85,247,0.2); }
+
+  /* Spinner */
+  .spinner {
+    width: 18px; height: 18px;
+    border: 2px solid var(--border);
+    border-top-color: var(--brand);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    flex-shrink: 0;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .loading-row {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 1rem;
+    color: var(--text-3); font-size: 0.82rem;
+  }
+</style>
+</head>
+<body>
+
+<!-- ── Top Bar ── -->
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-logo">⚡</div>
+    <span class="topbar-title">Lab Editor</span>
+    <span class="topbar-lab" id="lab-label">Lab 3 — Arrays & Pointers</span>
+  </div>
+  <div class="topbar-right">
+    <select class="lang-select" id="lang-select" onchange="onLangChange(this.value)">
+      <option value="c">C</option>
+      <option value="cpp">C++</option>
+    </select>
+    <button class="btn-run" id="run-btn" onclick="runCode()">
+      <span class="run-icon">▶</span> Run
+    </button>
+    <button class="btn-icon" title="Toggle theme" onclick="toggleTheme()">🌙</button>
+    <button class="btn-icon" title="Back to dashboard" onclick="location.href='dashboard-student.html'">←</button>
+  </div>
+</div>
+
+<!-- ── Workspace ── -->
+<div class="workspace">
+
+  <!-- Editor Pane -->
+  <div class="editor-pane">
+    <div class="editor-file-bar">
+      <div class="file-tab">
+        <div class="file-dot"></div>
+        <span id="file-name">main.c</span>
+      </div>
+    </div>
+    <div id="monaco-container"></div>
+    <div class="stdin-bar">
+      <span class="stdin-label">stdin:</span>
+      <input class="stdin-input" id="stdin-input" type="text" placeholder="Enter program input here (optional)…" />
+    </div>
+  </div>
+
+  <!-- Output Pane -->
+  <div class="output-pane">
+    <div class="output-header">
+      <div class="output-header-left">
+        <div class="status-dot" id="status-dot"></div>
+        <span class="output-title">Output</span>
+      </div>
+      <span class="exec-time" id="exec-time"></span>
+    </div>
+    <div class="output-body" id="output-body">
+      <div class="empty-state" id="empty-state">
+        <div class="empty-icon">▶</div>
+        <p>Press <strong>Run</strong> to compile<br/>and execute your code.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Monaco Loader -->
+<script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
+<script>
+// ── Monaco Setup ──
+require.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs' } });
+
+let editor;
+const STARTER = {
+  c: `#include <stdio.h>\n\nint main() {\n    printf("Hello, World!\\n");\n    return 0;\n}\n`,
+  cpp: `#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << "Hello, World!" << endl;\n    return 0;\n}\n`
+};
+
+require(['vs/editor/editor.main'], () => {
+  editor = monaco.editor.create(document.getElementById('monaco-container'), {
+    value: STARTER.c,
+    language: 'c',
+    theme: 'vs-dark',
+    fontSize: 14,
+    fontFamily: "'JetBrains Mono', monospace",
+    fontLigatures: true,
+    minimap: { enabled: false },
+    scrollBeyondLastLine: false,
+    lineNumbers: 'on',
+    renderLineHighlight: 'line',
+    padding: { top: 12, bottom: 12 },
+    automaticLayout: true,
+    tabSize: 4,
+    wordWrap: 'on',
+  });
+});
+
+function onLangChange(lang) {
+  if (!editor) return;
+  const model = editor.getModel();
+  monaco.editor.setModelLanguage(model, lang);
+  editor.setValue(STARTER[lang] || '');
+  document.getElementById('file-name').textContent = lang === 'cpp' ? 'main.cpp' : 'main.c';
+}
+
+// ── Theme Toggle ──
+function toggleTheme() {
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  if (editor) monaco.editor.setTheme(isDark ? 'vs' : 'vs-dark');
+}
+
+// ── Card Builder ──
+function makeCard(cls, icon, title, bodyHTML, collapsed = false) {
+  const div = document.createElement('div');
+  div.className = `out-card ${cls}${collapsed ? ' collapsed' : ''}`;
+  div.innerHTML = `
+    <div class="out-card-head" onclick="this.parentElement.classList.toggle('collapsed')">
+      <span class="head-icon">${icon}</span>
+      ${title}
+      <span class="chevron">▼</span>
+    </div>
+    <div class="out-card-body">${bodyHTML}</div>`;
+  return div;
+}
+
+function esc(str) {
+  return String(str)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── Run ──
+async function runCode() {
+  if (!editor) return;
+  const code  = editor.getValue();
+  const lang  = document.getElementById('lang-select').value;
+  const stdin = document.getElementById('stdin-input').value;
+
+  const dot    = document.getElementById('status-dot');
+  const body   = document.getElementById('output-body');
+  const runBtn = document.getElementById('run-btn');
+  const timeEl = document.getElementById('exec-time');
+
+  // Loading state
+  runBtn.disabled = true;
+  dot.className = 'status-dot running';
+  timeEl.textContent = '';
+  body.innerHTML = `<div class="loading-row"><div class="spinner"></div> Compiling…</div>`;
+
+  try {
+    const res  = await fetch('http://localhost:8000/run', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ language: lang, code, stdin })
+    });
+    const data = await res.json();
+    body.innerHTML = '';
+
+    if (data.success) {
+      dot.className = 'status-dot success';
+      timeEl.textContent = `${data.execution_time_ms}ms`;
+      body.appendChild(makeCard(
+        'card-success', '✓', 'Program Output',
+        `<div class="code-block success-out">${esc(data.output) || '(no output)'}</div>`
+      ));
+    } else {
+      dot.className = 'status-dot error';
+      const fb = data.ai_feedback || {};
+
+      // 1 — Compiler Error
+      body.appendChild(makeCard(
+        'card-error', '✕', 'Compiler Error',
+        `<div class="code-block">${esc(data.compiler_error)}</div>`
+      ));
+
+      // 2 — Explanation
+      if (fb.explanation) {
+        body.appendChild(makeCard(
+          'card-explain', '💡', 'What went wrong?',
+          `<p>${esc(fb.explanation)}</p>`
+        ));
+      }
+
+      // 3 — Why it happened + line
+      if (fb.reason) {
+        const lineHtml = fb.line_to_inspect
+          ? `<div class="line-badge">📍 Line ${esc(fb.line_to_inspect)}</div>`
+          : '';
+        body.appendChild(makeCard(
+          'card-warn', '🔍', 'Why it happened',
+          `${lineHtml}<p>${esc(fb.reason)}</p>`
+        ));
+      }
+
+      // 4 — Hint
+      if (fb.hint) {
+        body.appendChild(makeCard(
+          'card-hint', '🛠', 'Debugging Hint',
+          `<p>${esc(fb.hint)}</p>`
+        ));
+      }
+
+      // 5 — Concept + source
+      if (fb.concept) {
+        const srcBadge = fb.source === 'knowledge_base'
+          ? `<div class="source-badge source-kb">⚡ Knowledge Base</div>`
+          : `<div class="source-badge source-ai">✦ AI Analysis</div>`;
+        body.appendChild(makeCard(
+          'card-concept', '📚', 'Programming Concept',
+          `<p>${esc(fb.concept)}</p>${srcBadge}`,
+          true   // collapsed by default — least urgent
+        ));
+      }
+    }
+  } catch (err) {
+    dot.className = 'status-dot error';
+    body.innerHTML = '';
+    body.appendChild(makeCard(
+      'card-error', '⚠', 'Connection Error',
+      `<p>Could not reach the backend. Make sure the FastAPI server is running on <code>localhost:8000</code>.</p>`
+    ));
+  } finally {
+    runBtn.disabled = false;
+  }
+}
+
+// Ctrl+Enter shortcut
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); runCode(); }
+});
+</script>
+</body>
+</html>
